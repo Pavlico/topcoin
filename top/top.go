@@ -56,35 +56,35 @@ func (tr TopResponse) ValidateResponse(response []byte, worker worker.Worker, ap
 	err := json.Unmarshal(response, &tr.TopResponseError)
 	if err != nil {
 		log.Fatalf("Couldn't parse response body. %+v", err)
-		worker.Quit <- true
+		worker.Stop()
 	}
 	if tr.TopResponseError.Message != conf.SuccessMessage {
 		log.Fatalf("Response is not valid Err message: %v", tr.TopResponseError.Message)
-		worker.Quit <- true
+		worker.Stop()
 	}
 }
 
-func (tr TopResponse) ParseResponse(response []byte, w worker.Worker) TopResponse {
+func (tr TopResponse) ParseResponse(response []byte, worker worker.Worker) TopResponse {
 	err := json.Unmarshal(response, &tr)
 	if err != nil {
 		log.Fatalf("Couldn't parse response body. %+v", err)
-		w.Quit <- true
+		worker.Stop()
 	}
 	return tr
 }
 
-func (tr TopResponse) GetResponse(req *http.Request, c http.Client, w worker.Worker) []byte {
-	response, err := c.Do(req)
+func (tr TopResponse) GetResponse(req *http.Request, client http.Client, worker worker.Worker) []byte {
+	response, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("Error sending request to API endpoint. %+v", err)
-		w.Quit <- true
+		worker.Stop()
 	}
 	responseData, _ := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
 	return responseData
 }
 
-func (sr TopResponse) CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request {
+func (sr TopResponse) CreateRequest(apiData conf.ApiData, worker worker.Worker) *http.Request {
 	param := url.Values{}
 	for i, val := range apiData.Options {
 		param.Add(i, val)
@@ -94,7 +94,7 @@ func (sr TopResponse) CreateRequest(apiData conf.ApiData, w worker.Worker) *http
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		log.Println(err)
-		w.Stop()
+		worker.Stop()
 	}
 	req.Header.Add("x-api-key", apiData.Credentials)
 	return req

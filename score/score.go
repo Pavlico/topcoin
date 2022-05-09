@@ -52,7 +52,7 @@ func (sr ScoreResponse) GetResponse(req *http.Request, client http.Client, worke
 	response, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error sending request to API endpoint. %+v", err)
-		worker.Quit <- true
+		worker.Stop()
 	}
 	responseData, _ := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
@@ -62,19 +62,19 @@ func (sr ScoreResponse) ValidateResponse(response []byte, worker worker.Worker) 
 	err := json.Unmarshal(response, &sr.ScoreResponseError)
 	if err != nil {
 		log.Fatalf("Couldn't parse response body. %+v", err)
-		worker.Quit <- true
+		worker.Stop()
 	}
 	if sr.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
 		log.Fatalf("Response is not valid Err code: %v", sr.ScoreResponseError.Status.ErrorCode)
-		worker.Quit <- true
+		worker.Stop()
 	}
 }
 
-func (sr ScoreResponse) ParseResponse(response []byte, w worker.Worker) ScoreResponse {
+func (sr ScoreResponse) ParseResponse(response []byte, worker worker.Worker) ScoreResponse {
 	err := json.Unmarshal(response, &sr)
 	if err != nil {
 		log.Fatalf("Couldn't parse response body. %+v", err)
-		w.Quit <- true
+		worker.Stop()
 	}
 	return sr
 }
