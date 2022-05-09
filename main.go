@@ -1,30 +1,69 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"net/http"
+	"topcoin/conf"
+	"topcoin/flags"
+	"topcoin/score"
+	"topcoin/top"
+	"topcoin/worker"
 )
 
-func getSIGRTchannel() chan os.Signal {
-	sigChan := make(chan os.Signal, 1)
-	sigArr := make([]os.Signal, 31)
-	for i := range sigArr {
-		sigArr[i] = syscall.Signal(i + 0x22)
-	}
-	log.Println(sigArr)
+type Api interface {
+	ValidateResponse(response []byte, worker worker.Worker, apiData conf.ApiData)
+	ParseResponse(response []byte, w worker.Worker)
+	CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request
+	GetResponse(req *http.Request, c http.Client, w worker.Worker) []byte
+	SetApiData() conf.ApiData
+	PrettyPrint(i interface{}) string
+}
 
-	signal.Notify(sigChan, sigArr...)
-	return sigChan
+type ParsedResp struct {
+	Rank string
+	Name string
 }
 
 func main() {
-	c := getSIGRTchannel()
-	// Block until a signal is received.
-	for {
-		s := <-c
-		fmt.Println("Got signal:", s)
+	flagData := flags.SetFlagData()
+	if err := flagData.ValidateFlags(); err != nil {
+		log.Println(err)
+		return
 	}
+	worker := worker.NewWorker(flagData.MaxRoutines)
+	go processRequest(worker)
+	worker.RespChan <- flagData.ApiType
+	<-worker.Quit
+}
+
+func processRequest(w worker.Worker) {
+	for {
+		select {
+		case reqType := <-w.RespChan:
+			if err := get(reqType, w); err != nil {
+				log.Println(err)
+				w.Stop()
+			}
+
+		case <-w.Quit:
+			return
+		}
+	}
+}
+
+func get(reqType string, w worker.Worker) error {
+	switch reqType {
+	case conf.TopApiFlag:
+		top.Process(getClient(), w)
+		return nil
+	case conf.ScoreApiFlag:
+		score.Process(getClient(), w)
+		return nil
+	}
+	return nil
+}
+
+func getClient() http.Client {
+	client := http.Client{}
+	return client
 }
