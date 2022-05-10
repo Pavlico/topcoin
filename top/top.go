@@ -10,7 +10,7 @@ import (
 	"topcoin/conf"
 )
 
-type PrittyResponse struct {
+type PrettyResponse struct {
 	Name string
 	Rank int
 }
@@ -30,7 +30,7 @@ type TopResponseError struct {
 
 func Process(client http.Client) ([]byte, error) {
 	tResponse := TopResponse{}
-	prittyResp := []PrittyResponse{}
+	PrettyResp := []PrettyResponse{}
 	apiConf := conf.ApiConfig[conf.TopApi]
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
@@ -57,10 +57,10 @@ func Process(client http.Client) ([]byte, error) {
 			return nil, err
 		}
 		for _, v := range tResponse.Data {
-			prittyResp = append(prittyResp, PrittyResponse{Name: v.CoinInfo.Name, Rank: len(prittyResp) + 1})
+			PrettyResp = append(PrettyResp, PrettyResponse{Name: v.CoinInfo.Name, Rank: len(PrettyResp) + 1})
 		}
 	}
-	return PrettyPrint(prittyResp)
+	return PrettyPrint(PrettyResp)
 }
 
 func (tResponse TopResponse) ValidateResponse() error {

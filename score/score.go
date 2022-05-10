@@ -8,7 +8,7 @@ import (
 	"topcoin/conf"
 )
 
-type PrittyResponse struct {
+type PrettyResponse struct {
 	Name  string
 	Score float32
 }
@@ -34,7 +34,7 @@ type ScoreResponseError struct {
 
 func Process(client http.Client) ([]byte, error) {
 	sResponse := ScoreResponse{}
-	prittyResp := []PrittyResponse{}
+	PrettyResp := []PrettyResponse{}
 	apiConf := conf.ApiConfig[conf.ScoreApi]
 	req, err := sResponse.CreateRequest(apiConf)
 	if err != nil {
@@ -53,9 +53,9 @@ func Process(client http.Client) ([]byte, error) {
 		return nil, err
 	}
 	for _, v := range sResponse.Data {
-		prittyResp = append(prittyResp, PrittyResponse{Name: v.Name, Score: v.Score.Currency.Price})
+		PrettyResp = append(PrettyResp, PrettyResponse{Name: v.Name, Score: v.Score.Currency.Price})
 	}
-	return PrettyPrint(prittyResp)
+	return PrettyPrint(PrettyResp)
 }
 
 func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
