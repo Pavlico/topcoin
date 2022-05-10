@@ -8,12 +8,11 @@ import (
 	"topcoin/flags"
 	"topcoin/score"
 	"topcoin/top"
-	"topcoin/worker"
 )
 
 type Api interface {
-	CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request
-	GetResponse(req *http.Request, c http.Client, w worker.Worker) []byte
+	CreateRequest(apiData conf.ApiData) (*http.Request, error)
+	GetResponse(req *http.Request, client http.Client) ([]byte, error)
 }
 
 type ParsedResp struct {
