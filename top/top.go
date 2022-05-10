@@ -29,58 +29,61 @@ type TopResponseError struct {
 }
 
 func Process(client http.Client) ([]byte, error) {
-	var tr = TopResponse{}
-	var prittyResp = []PrittyResponse{}
-	var apiConf = conf.ApiConfig[conf.TopApi]
+	tResponse := TopResponse{}
+	prittyResp := []PrittyResponse{}
+	apiConf := conf.ApiConfig[conf.TopApi]
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
 		return nil, err
 	}
 	for i := 0; i < pageNumInt; i++ {
-		req, err := tr.CreateRequest(apiConf)
+		req, err := tResponse.CreateRequest(apiConf)
 		if err != nil {
 			return nil, err
 		}
-		response, err := tr.GetResponse(req, client)
+		response, err := tResponse.GetResponse(req, client)
 		if err != nil {
 			return nil, err
 		}
-		err = json.Unmarshal(response, &tr)
+		err = json.Unmarshal(response, &tResponse)
 		if err != nil {
 			return nil, err
 		}
-		err = tr.ValidateResponse()
+		err = tResponse.ValidateResponse()
 		if err != nil {
 			return nil, err
 		}
 		if err != nil {
 			return nil, err
 		}
-		for _, v := range tr.Data {
+		for _, v := range tResponse.Data {
 			prittyResp = append(prittyResp, PrittyResponse{Name: v.CoinInfo.Name, Rank: len(prittyResp) + 1})
 		}
 	}
 	return PrettyPrint(prittyResp)
 }
 
-func (tr TopResponse) ValidateResponse() error {
-	if tr.TopResponseError.Message != conf.SuccessMessage {
+func (tResponse TopResponse) ValidateResponse() error {
+	if tResponse.TopResponseError.Message != conf.SuccessMessage {
 		return errors.New("Response is not valid")
 	}
 	return nil
 }
 
-func (tr TopResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
+func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	responseData, _ := ioutil.ReadAll(response.Body)
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
 	defer response.Body.Close()
 	return responseData, nil
 }
 
-func (sr TopResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
+func (tr TopResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
 	param := url.Values{}
 	for i, val := range apiData.Options {
 		param.Add(i, val)

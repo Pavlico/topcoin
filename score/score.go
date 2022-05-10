@@ -33,49 +33,52 @@ type ScoreResponseError struct {
 }
 
 func Process(client http.Client) ([]byte, error) {
-	var sr = ScoreResponse{}
-	var prittyResp = []PrittyResponse{}
-	var apiConf = conf.ApiConfig[conf.ScoreApi]
-	req, err := sr.CreateRequest(apiConf)
+	sResponse := ScoreResponse{}
+	prittyResp := []PrittyResponse{}
+	apiConf := conf.ApiConfig[conf.ScoreApi]
+	req, err := sResponse.CreateRequest(apiConf)
 	if err != nil {
 		return nil, err
 	}
-	response, err := sr.GetResponse(req, client)
+	response, err := sResponse.GetResponse(req, client)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(response, &sr)
+	err = json.Unmarshal(response, &sResponse)
 	if err != nil {
 		return nil, err
 	}
-	err = sr.ValidateResponse(response)
+	err = sResponse.ValidateResponse(response)
 	if err != nil {
 		return nil, err
 	}
-	for _, v := range sr.Data {
+	for _, v := range sResponse.Data {
 		prittyResp = append(prittyResp, PrittyResponse{Name: v.Name, Score: v.Score.Currency.Price})
 	}
 	return PrettyPrint(prittyResp)
 }
 
-func (sr ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
+func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	responseData, _ := ioutil.ReadAll(response.Body)
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
 	defer response.Body.Close()
 	return responseData, nil
 }
-func (sr ScoreResponse) ValidateResponse(response []byte) error {
+func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
 
-	if sr.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
+	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
 		return errors.New("Response is not valid")
 	}
 	return nil
 }
 
-func (sr ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
+func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
 
 	endpoint := apiData.ApiAddress + apiData.EndPoint
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
