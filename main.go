@@ -12,11 +12,8 @@ import (
 )
 
 type Api interface {
-	ValidateResponse(response []byte, worker worker.Worker, apiData conf.ApiData)
-	ParseResponse(response []byte, w worker.Worker)
 	CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request
 	GetResponse(req *http.Request, c http.Client, w worker.Worker) []byte
-	SetApiData() conf.ApiData
 }
 
 type ParsedResp struct {
