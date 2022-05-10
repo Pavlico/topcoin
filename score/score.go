@@ -52,11 +52,7 @@ func Process(client http.Client) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	parsedRep, err := sr.ParseResponse(response)
-	if err != nil {
-		return nil, err
-	}
-	for _, v := range parsedRep.Data {
+	for _, v := range sr.Data {
 		prittyResp = append(prittyResp, PrittyResponse{Name: v.Name, Score: v.Score.Currency.Price})
 	}
 	return PrettyPrint(prittyResp)
@@ -77,14 +73,6 @@ func (sr ScoreResponse) ValidateResponse(response []byte) error {
 		return errors.New("Response is not valid")
 	}
 	return nil
-}
-
-func (sr *ScoreResponse) ParseResponse(response []byte) (*ScoreResponse, error) {
-	err := json.Unmarshal(response, &sr)
-	if err != nil {
-		return nil, err
-	}
-	return sr, nil
 }
 
 func (sr ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
