@@ -1,22 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"topcoin/conf"
 	"topcoin/flags"
 	"topcoin/score"
 	"topcoin/top"
-	"topcoin/worker"
 )
 
 type Api interface {
-	ValidateResponse(response []byte, worker worker.Worker, apiData conf.ApiData)
-	ParseResponse(response []byte, w worker.Worker)
-	CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request
-	GetResponse(req *http.Request, c http.Client, w worker.Worker) []byte
-	SetApiData() conf.ApiData
-	PrettyPrint(i interface{}) string
+	CreateRequest(apiData conf.ApiData) (*http.Request, error)
+	GetResponse(req *http.Request, client http.Client) ([]byte, error)
 }
 
 type ParsedResp struct {
@@ -30,37 +26,22 @@ func main() {
 		log.Println(err)
 		return
 	}
-	worker := worker.NewWorker(flagData.MaxRoutines)
-	go processRequest(worker)
-	worker.RespChan <- flagData.ApiType
-	<-worker.Quit
-}
-
-func processRequest(w worker.Worker) {
-	for {
-		select {
-		case reqType := <-w.RespChan:
-			if err := get(reqType, w); err != nil {
-				log.Println(err)
-				w.Stop()
-			}
-
-		case <-w.Quit:
-			return
-		}
+	response, err := get(flagData.ApiType)
+	if err != nil {
+		log.Println(err)
+		return
 	}
+	fmt.Println(string(response))
 }
 
-func get(reqType string, w worker.Worker) error {
+func get(reqType string) ([]byte, error) {
 	switch reqType {
-	case conf.TopApiFlag:
-		top.Process(getClient(), w)
-		return nil
-	case conf.ScoreApiFlag:
-		score.Process(getClient(), w)
-		return nil
+	case conf.TopApi:
+		return top.Process(getClient())
+	case conf.ScoreApi:
+		return score.Process(getClient())
 	}
-	return nil
+	return nil, nil
 }
 
 func getClient() http.Client {

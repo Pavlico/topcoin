@@ -2,15 +2,13 @@ package score
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"topcoin/conf"
-	"topcoin/worker"
 )
 
-type PrittyResponse struct {
+type PrettyResponse struct {
 	Name  string
 	Score float32
 }
@@ -34,72 +32,63 @@ type ScoreResponseError struct {
 	} `json:"status"`
 }
 
-func Process(client http.Client, worker worker.Worker) {
-	var sr = ScoreResponse{}
-	var prittyResp = []PrittyResponse{}
-	apiData := sr.SetApiData()
-	req := sr.CreateRequest(apiData, worker)
-	response := sr.GetResponse(req, client, worker)
-	sr.ValidateResponse(response, worker)
-	parsedRep := sr.ParseResponse(response, worker)
-	for _, v := range parsedRep.Data {
-		prittyResp = append(prittyResp, PrittyResponse{Name: v.Name, Score: v.Score.Currency.Price})
+func Process(client http.Client) ([]byte, error) {
+	sResponse := ScoreResponse{}
+	PrettyResp := []PrettyResponse{}
+	apiConf := conf.ApiConfig[conf.ScoreApi]
+	req, err := sResponse.CreateRequest(apiConf)
+	if err != nil {
+		return nil, err
 	}
-	fmt.Println(sr.PrettyPrint(prittyResp))
+	response, err := sResponse.GetResponse(req, client)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(response, &sResponse)
+	if err != nil {
+		return nil, err
+	}
+	err = sResponse.ValidateResponse(response)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range sResponse.Data {
+		PrettyResp = append(PrettyResp, PrettyResponse{Name: v.Name, Score: v.Score.Currency.Price})
+	}
+	return PrettyPrint(PrettyResp)
 }
 
-func (sr ScoreResponse) GetResponse(req *http.Request, client http.Client, worker worker.Worker) []byte {
+func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
-		log.Printf("Error sending request to API endpoint. %+v", err)
-		worker.Stop()
+		return nil, err
 	}
-	responseData, _ := ioutil.ReadAll(response.Body)
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
 	defer response.Body.Close()
-	return responseData
+	return responseData, nil
 }
-func (sr ScoreResponse) ValidateResponse(response []byte, worker worker.Worker) {
-	err := json.Unmarshal(response, &sr.ScoreResponseError)
-	if err != nil {
-		log.Fatalf("Couldn't parse response body. %+v", err)
-		worker.Stop()
+func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
+
+	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
+		return errors.New("Response is not valid")
 	}
-	if sr.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
-		log.Fatalf("Response is not valid Err code: %v", sr.ScoreResponseError.Status.ErrorCode)
-		worker.Stop()
-	}
+	return nil
 }
 
-func (sr ScoreResponse) ParseResponse(response []byte, worker worker.Worker) ScoreResponse {
-	err := json.Unmarshal(response, &sr)
-	if err != nil {
-		log.Fatalf("Couldn't parse response body. %+v", err)
-		worker.Stop()
-	}
-	return sr
-}
+func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
 
-func (sr ScoreResponse) CreateRequest(apiData conf.ApiData, w worker.Worker) *http.Request {
-
-	endpoint := apiData.ApiAddress + apiData.Subdirectory
+	endpoint := apiData.ApiAddress + apiData.EndPoint
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		log.Println(err)
-		w.Stop()
+		return nil, err
 	}
-	req.Header.Add("X-CMC_PRO_API_KEY", apiData.Credentials)
-	return req
+	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
+	return req, nil
 }
 
-func (sr ScoreResponse) SetApiData() conf.ApiData {
-	return conf.ApiData{
-		ApiAddress:   conf.CoinmarketcapAddress,
-		Subdirectory: conf.ScoreSubDirectory,
-		Credentials:  conf.CoinmarketcapCredentials,
-	}
-}
-
-func (sr ScoreResponse) PrettyPrint(i interface{}) string {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	return string(s)
+func PrettyPrint(i interface{}) ([]byte, error) {
+	return json.MarshalIndent(i, "", "\t")
 }
