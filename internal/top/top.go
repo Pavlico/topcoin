@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"topcoin/conf"
+	"topcoin/internal/conf"
 )
 
 type PrettyResponse struct {
-	Name string
-	Rank int
+	Symbol string
+	Rank   int
 }
 
 type TopResponse struct {
@@ -21,14 +21,15 @@ type TopResponse struct {
 }
 type TopResponseData struct {
 	CoinInfo struct {
-		Name string `json:"Name"`
+		Symbol string `json:"Name"`
 	} `json:"CoinInfo"`
 }
 type TopResponseError struct {
 	Message string `json:"Message"`
 }
 
-func Process(client http.Client) ([]byte, error) {
+func Process() ([]PrettyResponse, error) {
+	client := getClient()
 	tResponse := TopResponse{}
 	PrettyResp := []PrettyResponse{}
 	apiConf := conf.ApiConfig[conf.TopApi]
@@ -37,7 +38,8 @@ func Process(client http.Client) ([]byte, error) {
 		return nil, err
 	}
 	for i := 0; i < pageNumInt; i++ {
-		req, err := tResponse.CreateRequest(apiConf)
+		currentPage := strconv.Itoa(i)
+		req, err := tResponse.CreateRequest(apiConf, currentPage)
 		if err != nil {
 			return nil, err
 		}
@@ -57,10 +59,10 @@ func Process(client http.Client) ([]byte, error) {
 			return nil, err
 		}
 		for _, v := range tResponse.Data {
-			PrettyResp = append(PrettyResp, PrettyResponse{Name: v.CoinInfo.Name, Rank: len(PrettyResp) + 1})
+			PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.CoinInfo.Symbol, Rank: len(PrettyResp) + 1})
 		}
 	}
-	return PrettyPrint(PrettyResp)
+	return PrettyResp, nil
 }
 
 func (tResponse TopResponse) ValidateResponse() error {
@@ -83,8 +85,9 @@ func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) 
 	return responseData, nil
 }
 
-func (tr TopResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
+func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*http.Request, error) {
 	param := url.Values{}
+	apiData.Options[conf.PageParam] = currentPage
 	for i, val := range apiData.Options {
 		param.Add(i, val)
 	}
@@ -100,4 +103,9 @@ func (tr TopResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error)
 
 func PrettyPrint(i interface{}) ([]byte, error) {
 	return json.MarshalIndent(i, " ", "\t")
+}
+
+func getClient() http.Client {
+	client := http.Client{}
+	return client
 }

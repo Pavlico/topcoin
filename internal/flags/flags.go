@@ -9,23 +9,25 @@ import (
 const emptyFlagValue = ""
 const emptyStringVal = ""
 const defaultTrheads = 4
-const flagApi = "api"
+const flagLeadApi = "leadapi"
 const flagCredentials = "credentials"
 const flagHelpMessage = "Some flag message"
 const flagRoutines = "routines"
 
 type FlagData struct {
-	ApiType     string
+	ApiTypes    []string
+	LeadApi     string
 	MaxRoutines int
 }
 
 func SetFlagData() FlagData {
-	apiType := flag.String(flagApi, emptyFlagValue, flagHelpMessage)
 	routines := flag.Int(flagRoutines, defaultTrheads, flagHelpMessage)
+	leadApi := flag.String(flagLeadApi, emptyFlagValue, flagHelpMessage)
 	flag.Parse()
 	return FlagData{
-		ApiType:     *apiType,
+		ApiTypes:    flag.Args(),
 		MaxRoutines: *routines,
+		LeadApi:     *leadApi,
 	}
 }
 

@@ -5,12 +5,17 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"topcoin/conf"
+	"topcoin/internal/conf"
 )
 
+type Api interface {
+	CreateRequest(apiData conf.ApiData) (*http.Request, error)
+	GetResponse(req *http.Request, client http.Client) ([]byte, error)
+}
+
 type PrettyResponse struct {
-	Name  string
-	Score float32
+	Symbol string
+	Score  float32
 }
 
 type ScoreResponse struct {
@@ -18,8 +23,8 @@ type ScoreResponse struct {
 	ScoreResponseError
 }
 type ScoreResponseData struct {
-	Name  string `json:"Name"`
-	Score struct {
+	Symbol string `json:"symbol"`
+	Score  struct {
 		Currency struct {
 			Price float32 `json:"price"`
 		} `json:"USD"`
@@ -32,7 +37,13 @@ type ScoreResponseError struct {
 	} `json:"status"`
 }
 
-func Process(client http.Client) ([]byte, error) {
+func Initialize() Api {
+	var apiResponse Api = ScoreResponse{}
+	return apiResponse
+}
+
+func Process() ([]PrettyResponse, error) {
+	client := getClient()
 	sResponse := ScoreResponse{}
 	PrettyResp := []PrettyResponse{}
 	apiConf := conf.ApiConfig[conf.ScoreApi]
@@ -53,9 +64,9 @@ func Process(client http.Client) ([]byte, error) {
 		return nil, err
 	}
 	for _, v := range sResponse.Data {
-		PrettyResp = append(PrettyResp, PrettyResponse{Name: v.Name, Score: v.Score.Currency.Price})
+		PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.Symbol, Score: v.Score.Currency.Price})
 	}
-	return PrettyPrint(PrettyResp)
+	return PrettyResp, nil
 }
 
 func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
@@ -91,4 +102,9 @@ func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Reques
 
 func PrettyPrint(i interface{}) ([]byte, error) {
 	return json.MarshalIndent(i, "", "\t")
+}
+
+func getClient() http.Client {
+	client := http.Client{}
+	return client
 }
