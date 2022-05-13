@@ -55,9 +55,6 @@ func Process() ([]PrettyResponse, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err != nil {
-			return nil, err
-		}
 		for _, v := range tResponse.Data {
 			PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.CoinInfo.Symbol, Rank: len(PrettyResp) + 1})
 		}
@@ -99,10 +96,6 @@ func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil
-}
-
-func PrettyPrint(i interface{}) ([]byte, error) {
-	return json.MarshalIndent(i, " ", "\t")
 }
 
 func getClient() http.Client {

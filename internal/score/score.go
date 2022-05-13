@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"topcoin/internal/conf"
 )
 
@@ -45,7 +46,7 @@ func Initialize() Api {
 func Process() ([]PrettyResponse, error) {
 	client := getClient()
 	sResponse := ScoreResponse{}
-	PrettyResp := []PrettyResponse{}
+	prettyResp := []PrettyResponse{}
 	apiConf := conf.ApiConfig[conf.ScoreApi]
 	req, err := sResponse.CreateRequest(apiConf)
 	if err != nil {
@@ -64,9 +65,9 @@ func Process() ([]PrettyResponse, error) {
 		return nil, err
 	}
 	for _, v := range sResponse.Data {
-		PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.Symbol, Score: v.Score.Currency.Price})
+		prettyResp = append(prettyResp, PrettyResponse{Symbol: v.Symbol, Score: v.Score.Currency.Price})
 	}
-	return PrettyResp, nil
+	return prettyResp, nil
 }
 
 func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
@@ -90,18 +91,17 @@ func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
 }
 
 func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
-
-	endpoint := apiData.ApiAddress + apiData.EndPoint
+	param := url.Values{}
+	for i, val := range apiData.Options {
+		param.Add(i, val)
+	}
+	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil
-}
-
-func PrettyPrint(i interface{}) ([]byte, error) {
-	return json.MarshalIndent(i, "", "\t")
 }
 
 func getClient() http.Client {
