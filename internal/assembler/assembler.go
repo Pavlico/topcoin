@@ -29,7 +29,9 @@ func Get(reqTypes []string, outputChan chan<- string, errorChan chan<- error, ct
 		case <-ctx.Done():
 			return
 		}
-
+		// why not like that? :)
+		// topData = <-topRequestChan:
+		// scoreData = <-scoreRequestChan:
 		if len(topData) == 0 || len(topData) == 0 {
 			continue
 		}
