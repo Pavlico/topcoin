@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/gabrielf/gnock v0.0.0-20180214220038-066a84a2d8bc
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.5.1
 )
 

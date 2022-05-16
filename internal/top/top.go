@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"sync"
 	"topcoin/internal/conf"
+
+	errorsPkg "github.com/pkg/errors"
 )
 
-type PrettyResponse struct {
+type TopData struct {
 	Symbol string
 	Rank   int
 }
@@ -28,43 +31,47 @@ type TopResponseError struct {
 	Message string `json:"Message"`
 }
 
-func Process() ([]PrettyResponse, error) {
+func Process(topChanReq chan<- map[string]TopData, errChan chan<- error) {
 	client := getClient()
 	tResponse := TopResponse{}
-	PrettyResp := []PrettyResponse{}
+	topData := make(map[string]TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
-		return nil, err
+		errChan <- err
 	}
+	var wg sync.WaitGroup
+	wg.Add(pageNumInt)
 	for i := 0; i < pageNumInt; i++ {
 		currentPage := strconv.Itoa(i)
 		req, err := tResponse.CreateRequest(apiConf, currentPage)
 		if err != nil {
-			return nil, err
+			errChan <- err
 		}
 		response, err := tResponse.GetResponse(req, client)
 		if err != nil {
-			return nil, err
+			errChan <- err
 		}
 		err = json.Unmarshal(response, &tResponse)
 		if err != nil {
-			return nil, err
+			errChan <- err
 		}
 		err = tResponse.ValidateResponse()
 		if err != nil {
-			return nil, err
+			errChan <- err
 		}
 		for _, v := range tResponse.Data {
-			PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.CoinInfo.Symbol, Rank: len(PrettyResp) + 1})
+			topData[v.CoinInfo.Symbol] = TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
 		}
+		wg.Done()
 	}
-	return PrettyResp, nil
+	wg.Wait()
+	topChanReq <- topData
 }
 
 func (tResponse TopResponse) ValidateResponse() error {
 	if tResponse.TopResponseError.Message != conf.SuccessMessage {
-		return errors.New("Response is not valid")
+		return errors.New("Response TOP is not valid")
 	}
 	return nil
 }
@@ -72,11 +79,11 @@ func (tResponse TopResponse) ValidateResponse() error {
 func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during sendig TOP request")
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during reading TOP response data")
 	}
 	defer response.Body.Close()
 	return responseData, nil
@@ -92,7 +99,7 @@ func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*
 	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during creating TOP request")
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil

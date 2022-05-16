@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"topcoin/internal/conf"
+
+	errorsPkg "github.com/pkg/errors"
 )
 
 type Api interface {
@@ -14,7 +16,7 @@ type Api interface {
 	GetResponse(req *http.Request, client http.Client) ([]byte, error)
 }
 
-type PrettyResponse struct {
+type ScoreData struct {
 	Symbol string
 	Score  float32
 }
@@ -43,41 +45,41 @@ func Initialize() Api {
 	return apiResponse
 }
 
-func Process() ([]PrettyResponse, error) {
+func Process(scoreChanReq chan<- map[string]ScoreData, errChan chan<- error) {
 	client := getClient()
 	sResponse := ScoreResponse{}
-	prettyResp := []PrettyResponse{}
+	scoreData := make(map[string]ScoreData)
 	apiConf := conf.ApiConfig[conf.ScoreApi]
 	req, err := sResponse.CreateRequest(apiConf)
 	if err != nil {
-		return nil, err
+		errChan <- err
 	}
 	response, err := sResponse.GetResponse(req, client)
 	if err != nil {
-		return nil, err
+		errChan <- err
 	}
 	err = json.Unmarshal(response, &sResponse)
 	if err != nil {
-		return nil, err
+		errChan <- err
 	}
 	err = sResponse.ValidateResponse(response)
 	if err != nil {
-		return nil, err
+		errChan <- err
 	}
 	for _, v := range sResponse.Data {
-		prettyResp = append(prettyResp, PrettyResponse{Symbol: v.Symbol, Score: v.Score.Currency.Price})
+		scoreData[v.Symbol] = ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price}
 	}
-	return prettyResp, nil
+	scoreChanReq <- scoreData
 }
 
 func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during sendig SCORE request")
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during reading SCORE response data")
 	}
 	defer response.Body.Close()
 	return responseData, nil
@@ -85,7 +87,7 @@ func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client
 func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
 
 	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
-		return errors.New("Response is not valid")
+		return errors.New("Response SCORE not valid")
 	}
 	return nil
 }
@@ -98,7 +100,7 @@ func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Reques
 	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		return nil, err
+		return nil, errorsPkg.Wrap(err, "Error during creating request")
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil
