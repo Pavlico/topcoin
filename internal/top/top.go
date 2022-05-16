@@ -3,6 +3,7 @@ package top
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -36,9 +37,10 @@ func Process(topChanReq chan<- map[string]TopData, errChan chan<- error) {
 	tResponse := TopResponse{}
 	topData := make(map[string]TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
+	var topErrors error
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
-		errChan <- err
+		errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during creating Top Request: %v", err))
 	}
 	var wg sync.WaitGroup
 	wg.Add(pageNumInt)
@@ -46,19 +48,19 @@ func Process(topChanReq chan<- map[string]TopData, errChan chan<- error) {
 		currentPage := strconv.Itoa(i)
 		req, err := tResponse.CreateRequest(apiConf, currentPage)
 		if err != nil {
-			errChan <- err
+			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during creating Top Request: %v", err))
 		}
 		response, err := tResponse.GetResponse(req, client)
 		if err != nil {
-			errChan <- err
+			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during getting Top Response: %v", err))
 		}
 		err = json.Unmarshal(response, &tResponse)
 		if err != nil {
-			errChan <- err
+			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during unamrshalling Top Response: %v", err))
 		}
 		err = tResponse.ValidateResponse()
 		if err != nil {
-			errChan <- err
+			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during validating Top Response: %v", err))
 		}
 		for _, v := range tResponse.Data {
 			topData[v.CoinInfo.Symbol] = TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
@@ -66,6 +68,9 @@ func Process(topChanReq chan<- map[string]TopData, errChan chan<- error) {
 		wg.Done()
 	}
 	wg.Wait()
+	if topErrors != nil {
+		errChan <- topErrors
+	}
 	topChanReq <- topData
 }
 

@@ -3,6 +3,7 @@ package score
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -10,11 +11,6 @@ import (
 
 	errorsPkg "github.com/pkg/errors"
 )
-
-type Api interface {
-	CreateRequest(apiData conf.ApiData) (*http.Request, error)
-	GetResponse(req *http.Request, client http.Client) ([]byte, error)
-}
 
 type ScoreData struct {
 	Symbol string
@@ -40,34 +36,33 @@ type ScoreResponseError struct {
 	} `json:"status"`
 }
 
-func Initialize() Api {
-	var apiResponse Api = ScoreResponse{}
-	return apiResponse
-}
-
 func Process(scoreChanReq chan<- map[string]ScoreData, errChan chan<- error) {
 	client := getClient()
 	sResponse := ScoreResponse{}
 	scoreData := make(map[string]ScoreData)
 	apiConf := conf.ApiConfig[conf.ScoreApi]
+	var scoreErrors error
 	req, err := sResponse.CreateRequest(apiConf)
 	if err != nil {
-		errChan <- err
+		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during creating Score Request: %v", err))
 	}
 	response, err := sResponse.GetResponse(req, client)
 	if err != nil {
-		errChan <- err
+		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during getting Score Response: %v", err))
 	}
 	err = json.Unmarshal(response, &sResponse)
 	if err != nil {
-		errChan <- err
+		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during unmarshalling Score Request: %v", err))
 	}
 	err = sResponse.ValidateResponse(response)
 	if err != nil {
-		errChan <- err
+		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during validation Score Request: %v", err))
 	}
 	for _, v := range sResponse.Data {
 		scoreData[v.Symbol] = ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price}
+	}
+	if scoreErrors != nil {
+		errChan <- scoreErrors
 	}
 	scoreChanReq <- scoreData
 }
@@ -100,7 +95,7 @@ func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Reques
 	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		return nil, errorsPkg.Wrap(err, "Error during creating request")
+		return nil, err
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil

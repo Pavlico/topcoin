@@ -19,9 +19,9 @@ func Get(reqTypes []string, outputChan chan<- string, errorChan chan<- error, ct
 	scoreRequestChan := make(chan map[string]score.ScoreData)
 	var topData map[string]top.TopData
 	var scoreData map[string]score.ScoreData
+	go top.Process(topRequestChan, errorChan)
+	go score.Process(scoreRequestChan, errorChan)
 	for {
-		go top.Process(topRequestChan, errorChan)
-		go score.Process(scoreRequestChan, errorChan)
 		select {
 		case topData = <-topRequestChan:
 		case scoreData = <-scoreRequestChan:
@@ -29,9 +29,6 @@ func Get(reqTypes []string, outputChan chan<- string, errorChan chan<- error, ct
 		case <-ctx.Done():
 			return
 		}
-		// why not like that? :)
-		// topData = <-topRequestChan:
-		// scoreData = <-scoreRequestChan:
 		if len(topData) == 0 || len(topData) == 0 {
 			continue
 		}
