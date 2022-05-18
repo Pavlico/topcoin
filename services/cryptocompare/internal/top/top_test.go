@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
-	"topcoin/internal/dataTypes"
-	"topcoin/internal/top"
+
+	"github.com/Pavlico/topcoin/cryptocompare/dataTypes"
+	"github.com/Pavlico/topcoin/cryptocompare/top"
 
 	"github.com/nbio/st"
 	"gopkg.in/h2non/gock.v1"
