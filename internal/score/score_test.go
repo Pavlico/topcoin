@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"topcoin/internal/dataTypes"
 	"topcoin/internal/score"
 
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,7 @@ func createRequest() (*http.Request, error) {
 }
 func TestSuccesfullProcess(t *testing.T) {
 	scoreStruct := score.ScoreResponse{}
-	prettyResp := []score.ScoreData{}
+	prettyResp := []dataTypes.ScoreData{}
 	req, err := createRequest()
 	createSuccesfullResponseMock()
 	resp, err := scoreStruct.GetResponse(req, http.Client{})
@@ -50,7 +51,7 @@ func TestSuccesfullProcess(t *testing.T) {
 	}
 
 	for _, v := range scoreStruct.Data {
-		prettyResp = append(prettyResp, score.ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price})
+		prettyResp = append(prettyResp, dataTypes.ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price})
 	}
-	assert.Equal(t, prettyResp, []score.ScoreData{{Symbol: "BTC", Score: 28379.49}})
+	assert.Equal(t, prettyResp, []dataTypes.ScoreData{{Symbol: "BTC", Score: 28379.49}})
 }

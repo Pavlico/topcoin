@@ -3,21 +3,13 @@ package top
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
-	"sync"
 	"topcoin/internal/conf"
-
-	errorsPkg "github.com/pkg/errors"
+	"topcoin/internal/dataTypes"
 )
-
-type TopData struct {
-	Symbol string
-	Rank   int
-}
 
 type TopResponse struct {
 	Data []TopResponseData `json:"Data"`
@@ -32,46 +24,38 @@ type TopResponseError struct {
 	Message string `json:"Message"`
 }
 
-func Process(topChanReq chan<- map[string]TopData, errChan chan<- error) {
+func Process() (map[string]dataTypes.TopData, error) {
 	client := getClient()
 	tResponse := TopResponse{}
-	topData := make(map[string]TopData)
+	topData := make(map[string]dataTypes.TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
-	var topErrors error
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
-		errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during creating Top Request: %v", err))
+		return nil, err
 	}
-	var wg sync.WaitGroup
-	wg.Add(pageNumInt)
 	for i := 0; i < pageNumInt; i++ {
 		currentPage := strconv.Itoa(i)
 		req, err := tResponse.CreateRequest(apiConf, currentPage)
 		if err != nil {
-			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during creating Top Request: %v", err))
+			return nil, err
 		}
 		response, err := tResponse.GetResponse(req, client)
 		if err != nil {
-			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during getting Top Response: %v", err))
+			return nil, err
 		}
 		err = json.Unmarshal(response, &tResponse)
 		if err != nil {
-			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during unamrshalling Top Response: %v", err))
+			return nil, err
 		}
 		err = tResponse.ValidateResponse()
 		if err != nil {
-			errorsPkg.Wrap(topErrors, fmt.Sprintf("Error during validating Top Response: %v", err))
+			return nil, err
 		}
 		for _, v := range tResponse.Data {
-			topData[v.CoinInfo.Symbol] = TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
+			topData[v.CoinInfo.Symbol] = dataTypes.TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
 		}
-		wg.Done()
 	}
-	wg.Wait()
-	if topErrors != nil {
-		errChan <- topErrors
-	}
-	topChanReq <- topData
+	return topData, nil
 }
 
 func (tResponse TopResponse) ValidateResponse() error {
@@ -84,11 +68,11 @@ func (tResponse TopResponse) ValidateResponse() error {
 func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, errorsPkg.Wrap(err, "Error during sendig TOP request")
+		return nil, err
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, errorsPkg.Wrap(err, "Error during reading TOP response data")
+		return nil, err
 	}
 	defer response.Body.Close()
 	return responseData, nil
@@ -104,13 +88,15 @@ func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*
 	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
-		return nil, errorsPkg.Wrap(err, "Error during creating TOP request")
+		return nil, err
 	}
 	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
 	return req, nil
 }
 
 func getClient() http.Client {
-	client := http.Client{}
+	client := http.Client{
+		Timeout: conf.ApiTimeout,
+	}
 	return client
 }

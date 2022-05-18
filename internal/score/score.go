@@ -3,22 +3,18 @@ package score
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"topcoin/internal/conf"
+	"topcoin/internal/dataTypes"
 
 	errorsPkg "github.com/pkg/errors"
 )
 
-type ScoreData struct {
-	Symbol string
-	Score  float32
-}
-
 type ScoreResponse struct {
-	Data []ScoreResponseData `json:"Data"`
+	Data map[string]ScoreResponseData `json:"data"`
 	ScoreResponseError
 }
 type ScoreResponseData struct {
@@ -36,35 +32,36 @@ type ScoreResponseError struct {
 	} `json:"status"`
 }
 
-func Process(scoreChanReq chan<- map[string]ScoreData, errChan chan<- error) {
+func Process(topData map[string]dataTypes.TopData) (map[string]dataTypes.ScoreData, error) {
 	client := getClient()
 	sResponse := ScoreResponse{}
-	scoreData := make(map[string]ScoreData)
+	// var sr interface{}
+	scoreData := make(map[string]dataTypes.ScoreData)
 	apiConf := conf.ApiConfig[conf.ScoreApi]
-	var scoreErrors error
-	req, err := sResponse.CreateRequest(apiConf)
+	var symbols []string
+	for symbol, _ := range topData {
+		symbols = append(symbols, symbol)
+	}
+	req, err := sResponse.CreateRequest(apiConf, symbols)
 	if err != nil {
-		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during creating Score Request: %v", err))
+		return nil, err
 	}
 	response, err := sResponse.GetResponse(req, client)
 	if err != nil {
-		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during getting Score Response: %v", err))
+		return nil, err
 	}
 	err = json.Unmarshal(response, &sResponse)
 	if err != nil {
-		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during unmarshalling Score Request: %v", err))
+		return nil, err
 	}
 	err = sResponse.ValidateResponse(response)
 	if err != nil {
-		errorsPkg.Wrap(scoreErrors, fmt.Sprintf("Error during validation Score Request: %v", err))
+		return nil, err
 	}
 	for _, v := range sResponse.Data {
-		scoreData[v.Symbol] = ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price}
+		scoreData[v.Symbol] = dataTypes.ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price}
 	}
-	if scoreErrors != nil {
-		errChan <- scoreErrors
-	}
-	scoreChanReq <- scoreData
+	return scoreData, nil
 }
 
 func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
@@ -87,11 +84,12 @@ func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
 	return nil
 }
 
-func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Request, error) {
+func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData, symbols []string) (*http.Request, error) {
 	param := url.Values{}
 	for i, val := range apiData.Options {
 		param.Add(i, val)
 	}
+	param.Add(conf.SymbolParam, strings.Join(symbols, ","))
 	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
@@ -102,6 +100,8 @@ func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData) (*http.Reques
 }
 
 func getClient() http.Client {
-	client := http.Client{}
+	client := http.Client{
+		Timeout: conf.ApiTimeout,
+	}
 	return client
 }

@@ -4,7 +4,9 @@ import (
 	"context"
 	"log"
 	"topcoin/internal/assembler"
+	"topcoin/internal/dataTypes"
 	"topcoin/internal/flags"
+	prettifier "topcoin/internal/utils"
 
 	errorsPkg "github.com/pkg/errors"
 )
@@ -12,7 +14,7 @@ import (
 func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
-	outputChan := make(chan string)
+	outputChan := make(chan []dataTypes.CoinData)
 	errorChan := make(chan error)
 	flagData := flags.SetFlagData()
 	if err := flagData.ValidateFlags(); err != nil {
@@ -29,7 +31,11 @@ func main() {
 		cancel()
 		return
 	case v := <-outputChan:
-		log.Println(v)
+		prettyResp, err := prettifier.PrettyPrint(v)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(string(prettyResp))
 		return
 	}
 }

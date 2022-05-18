@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"topcoin/internal/dataTypes"
 	"topcoin/internal/top"
 
 	"github.com/nbio/st"
@@ -41,7 +42,7 @@ func createRequest() (*http.Request, error) {
 func TestSuccesfullProcess(t *testing.T) {
 	defer gock.Off()
 	topStruct := top.TopResponse{}
-	topData := make(map[string]top.TopData)
+	topData := make(map[string]dataTypes.TopData)
 	createSuccesfullResponseMock()
 	req, err := createRequest()
 	resp, err := topStruct.GetResponse(req, http.Client{})
@@ -55,10 +56,10 @@ func TestSuccesfullProcess(t *testing.T) {
 	}
 
 	for _, v := range topStruct.Data {
-		topData[v.CoinInfo.Symbol] = top.TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
+		topData[v.CoinInfo.Symbol] = dataTypes.TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
 	}
 
-	st.Expect(t, topData, map[string]top.TopData{
+	st.Expect(t, topData, map[string]dataTypes.TopData{
 		"BTC":      {Symbol: "BTC", Rank: 1},
 		"TEST":     {Symbol: "TEST", Rank: 2},
 		"MEGACOIN": {Symbol: "MEGACOIN", Rank: 3}})
