@@ -1,81 +1,46 @@
 package assembler
 
 import (
-	"encoding/json"
-	"errors"
-	"topcoin/internal/conf"
+	"context"
+	"topcoin/internal/dataTypes"
 	"topcoin/internal/score"
 	"topcoin/internal/top"
 )
 
-type PrettyResp struct {
-	Symbol string  `json:"Symbol"`
-	Rank   int     `json:"Rank"`
-	Score  float32 `json:"Score"`
-}
-
-func Get(reqTypes []string) (interface{}, error) {
-	dataToMerge := make(map[string]interface{})
-	for _, v := range reqTypes {
-		switch v {
-		case conf.TopApi:
-			data, err := top.Process()
-			if err != nil {
-				return nil, err
-			}
-			dataToMerge[v] = data
-		case conf.ScoreApi:
-			data, err := score.Process()
-			if err != nil {
-				return nil, err
-			}
-			dataToMerge[v] = data
-		}
-	}
-
-	mergedData, err := AssembleData(dataToMerge)
+func Get(reqTypes []string, outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
+	topData, err := top.Process()
 	if err != nil {
-		return nil, err
+		errorChan <- err
 	}
-	prettyMergedMap, err := PrettyPrint(mergedData)
+	scoreData, err := score.Process(topData)
 	if err != nil {
-		return nil, err
+		//place for logger
 	}
-	return string(prettyMergedMap), nil
+	mergedData, err := AssembleData(topData, scoreData)
+	if err != nil {
+		errorChan <- err
+	}
+	outputChan <- mergedData
+
 }
 
-func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, error) {
-	minMergeAmount := 2
-	if len(dataToMerge) < minMergeAmount {
-		return nil, errors.New("Not enough data to merge")
-	}
-	mergedMap := make(map[int]*PrettyResp)
-	nameToRankMap := make(map[string]int)
-	for _, m := range dataToMerge {
-		switch v := m.(type) {
-		case []top.PrettyResponse:
-			{
-				for _, k := range v {
-					mergedMap[k.Rank] = &PrettyResp{
-						Rank:   k.Rank,
-						Symbol: k.Symbol,
-					}
-					nameToRankMap[k.Symbol] = k.Rank
-				}
-			}
-		case []score.PrettyResponse:
-			{
-				for _, k := range v {
-					if rank, ok := nameToRankMap[k.Symbol]; ok {
-						mergedMap[rank].Score = k.Score
-					}
-				}
-			}
+func AssembleData(topData map[string]dataTypes.TopData, scoreData map[string]dataTypes.ScoreData) ([]dataTypes.CoinData, error) {
+	mergedData := []dataTypes.CoinData{}
+	for symbol, data := range topData {
+		scoreVal, ok := scoreData[symbol]
+		if !ok {
+			scoreVal = dataTypes.ScoreData{}
 		}
+		mergedData = append(mergedData, mergeData(data.Symbol, data.Rank, scoreVal.Score))
+
 	}
-	return mergedMap, nil
+	return mergedData, nil
 }
 
-func PrettyPrint(i interface{}) ([]byte, error) {
-	return json.MarshalIndent(i, "", "\t")
+func mergeData(symbol string, rank int, score float32) dataTypes.CoinData {
+	return dataTypes.CoinData{
+		Symbol: symbol,
+		Rank:   rank,
+		Score:  score,
+	}
 }
