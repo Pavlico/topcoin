@@ -35,7 +35,6 @@ type ScoreResponseError struct {
 func Process(topData map[string]dataTypes.TopData) (map[string]dataTypes.ScoreData, error) {
 	client := getClient()
 	sResponse := ScoreResponse{}
-	// var sr interface{}
 	scoreData := make(map[string]dataTypes.ScoreData)
 	apiConf := conf.ApiConfig[conf.ScoreApi]
 	var symbols []string
