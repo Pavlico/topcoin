@@ -8,10 +8,7 @@ const TsymParam = "tsym"
 const UsdCurrency = "USD"
 const SuccessMessage = "Success"
 const NoErrorCode = 0
-const Convert = "convert"
-const SkipInvalid = "skip_invalid"
-const SymbolParam = "symbol"
-const ApiTimeout = 5
+const Aux = "aux"
 
 var ApiConfig = map[string]ApiData{
 	TopApi: {
@@ -27,12 +24,12 @@ var ApiConfig = map[string]ApiData{
 	},
 	ScoreApi: {
 		ApiAddress:        "https://pro-api.coinmarketcap.com",
-		EndPoint:          "/v1/cryptocurrency/quotes/latest?",
+		EndPoint:          "/v1/cryptocurrency/listings/latest?",
 		Credentials:       "18f09716-386e-440a-8906-551d607d1574",
 		CredentialsHeader: "X-CMC_PRO_API_KEY",
 		Options: map[string]string{
-			Convert:     "USD",
-			SkipInvalid: "true",
+			LimitParam: "500",
+			Aux:        "",
 		},
 	},
 }

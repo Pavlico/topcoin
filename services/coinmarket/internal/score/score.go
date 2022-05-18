@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"topcoin/internal/conf"
-	"topcoin/internal/dataTypes"
+
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/conf"
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
 
 	errorsPkg "github.com/pkg/errors"
 )

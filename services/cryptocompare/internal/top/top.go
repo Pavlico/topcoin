@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"topcoin/internal/conf"
-	"topcoin/internal/dataTypes"
+
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/conf"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
 )
 
 type TopResponse struct {
