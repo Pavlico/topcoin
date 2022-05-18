@@ -7,13 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"topcoin/internal/conf"
-)
 
-type PrettyResponse struct {
-	Symbol string
-	Rank   int
-}
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/conf"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
+)
 
 type TopResponse struct {
 	Data []TopResponseData `json:"Data"`
@@ -28,10 +25,10 @@ type TopResponseError struct {
 	Message string `json:"Message"`
 }
 
-func Process() ([]PrettyResponse, error) {
+func Process() (map[string]dataTypes.TopData, error) {
 	client := getClient()
 	tResponse := TopResponse{}
-	PrettyResp := []PrettyResponse{}
+	topData := make(map[string]dataTypes.TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
 	if err != nil {
@@ -56,15 +53,15 @@ func Process() ([]PrettyResponse, error) {
 			return nil, err
 		}
 		for _, v := range tResponse.Data {
-			PrettyResp = append(PrettyResp, PrettyResponse{Symbol: v.CoinInfo.Symbol, Rank: len(PrettyResp) + 1})
+			topData[v.CoinInfo.Symbol] = dataTypes.TopData{Symbol: v.CoinInfo.Symbol, Rank: len(topData) + 1}
 		}
 	}
-	return PrettyResp, nil
+	return topData, nil
 }
 
 func (tResponse TopResponse) ValidateResponse() error {
 	if tResponse.TopResponseError.Message != conf.SuccessMessage {
-		return errors.New("Response is not valid")
+		return errors.New("Response TOP is not valid")
 	}
 	return nil
 }
@@ -99,6 +96,8 @@ func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*
 }
 
 func getClient() http.Client {
-	client := http.Client{}
+	client := http.Client{
+		Timeout: conf.ApiTimeout,
+	}
 	return client
 }

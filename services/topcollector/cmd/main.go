@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"topcoin/internal/assembler"
-	"topcoin/internal/flags"
+
+	"github.com/Pavlico/topcoin/assembler"
+	"github.com/Pavlico/topcoin/flags"
 )
 
 func main() {

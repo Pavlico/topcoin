@@ -3,9 +3,10 @@ package assembler
 import (
 	"encoding/json"
 	"errors"
-	"topcoin/internal/conf"
-	"topcoin/internal/score"
-	"topcoin/internal/top"
+
+	"github.com/Pavlico/topcoin/conf"
+	"github.com/Pavlico/topcoin/score"
+	"github.com/Pavlico/topcoin/top"
 )
 
 type PrettyResp struct {
