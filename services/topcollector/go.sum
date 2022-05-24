@@ -1,0 +1,13 @@
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524122505-7bb6fef06675 h1:5+Wi580CuaCGO0+huDJzadvz3e2idu7dTLDsEqg3mkY=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524122505-7bb6fef06675/go.mod h1:aygof8DId+kF7De99uziAXPkuO7hmU4kX3YdYruWV1k=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220524122505-7bb6fef06675 h1:Bv+PQSfoww1TVNowrc/f63+MUZJLosM656F2C7XK7Yo=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220524122505-7bb6fef06675/go.mod h1:JuLfWHL/S1739zTpXhtSMZDBhRiRrvdPokou76TRIm0=
+github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
+github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
+github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=
+github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
+github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
+gopkg.in/h2non/gock.v1 v1.1.2 h1:jBbHXgGBK/AoPVfJh5x4r/WxIrElvbLel8TCZkkZJoY=
+gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=

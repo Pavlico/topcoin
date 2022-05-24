@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/score"
-	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
+	scoreTypes "github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
+	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
 	"github.com/Pavlico/topcoin/services/cryptocompare/internal/top"
 	"github.com/Pavlico/topcoin/services/topcollector/internal/conf"
 )
@@ -56,7 +56,7 @@ func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, erro
 	nameToRankMap := make(map[string]int)
 	for _, m := range dataToMerge {
 		switch v := m.(type) {
-		case []dataTypes.ScoreData:
+		case []scoreTypes.ScoreData:
 			{
 				for _, k := range v {
 					mergedMap[k.Rank] = &PrettyResp{
@@ -66,7 +66,7 @@ func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, erro
 					nameToRankMap[k.Symbol] = k.Rank
 				}
 			}
-		case []dataTypes.TopData:
+		case []topTypes.TopData:
 			{
 				for _, k := range v {
 					if rank, ok := nameToRankMap[k.Symbol]; ok {

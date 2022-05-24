@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/conf"
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
 
 	errorsPkg "github.com/pkg/errors"
 )

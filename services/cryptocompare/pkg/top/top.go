@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/Pavlico/topcoin/services/cryptocompare/internal/conf"
-	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/conf"
+	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
 )
 
 type TopResponse struct {
