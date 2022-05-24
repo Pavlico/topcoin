@@ -9,6 +9,8 @@ const UsdCurrency = "USD"
 const SuccessMessage = "Success"
 const NoErrorCode = 0
 const Aux = "aux"
+const ApiTimeout = 2
+const SymbolParam = "aux"
 
 var ApiConfig = map[string]ApiData{
 	TopApi: {

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/Pavlico/topcoin/conf"
-	"github.com/Pavlico/topcoin/score"
-	"github.com/Pavlico/topcoin/top"
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/score"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/top"
+	"github.com/Pavlico/topcoin/services/topcollector/internal/conf"
 )
 
 type PrettyResp struct {

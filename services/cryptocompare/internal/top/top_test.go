@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Pavlico/topcoin/cryptocompare/dataTypes"
-	"github.com/Pavlico/topcoin/cryptocompare/top"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/top"
 
 	"github.com/nbio/st"
 	"gopkg.in/h2non/gock.v1"
