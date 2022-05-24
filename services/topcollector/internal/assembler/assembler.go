@@ -8,7 +8,7 @@ import (
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
 	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
-	"github.com/Pavlico/topcoin/services/topcollector/internal/conf"
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 )
 
 type PrettyResp struct {
