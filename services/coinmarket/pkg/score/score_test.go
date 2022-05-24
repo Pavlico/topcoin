@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
-	"github.com/Pavlico/topcoin/services/coinmarket/internal/score"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"

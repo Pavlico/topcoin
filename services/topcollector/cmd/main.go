@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Pavlico/topcoin/topcollector/internal/assembler"
-	"github.com/Pavlico/topcoin/topcollector/internal/flags"
+	"github.com/Pavlico/topcoin/services/topcollector/internal/assembler"
+	"github.com/Pavlico/topcoin/services/topcollector/internal/flags"
 )
 
 func main() {
