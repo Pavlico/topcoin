@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/Pavlico/topcoin/conf"
-	"github.com/Pavlico/topcoin/score"
-	"github.com/Pavlico/topcoin/top"
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/score"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/cryptocompare/internal/top"
+	"github.com/Pavlico/topcoin/services/topcollector/internal/conf"
 )
 
 type PrettyResp struct {
@@ -54,7 +56,7 @@ func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, erro
 	nameToRankMap := make(map[string]int)
 	for _, m := range dataToMerge {
 		switch v := m.(type) {
-		case []top.PrettyResponse:
+		case []dataTypes.ScoreData:
 			{
 				for _, k := range v {
 					mergedMap[k.Rank] = &PrettyResp{
@@ -64,7 +66,7 @@ func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, erro
 					nameToRankMap[k.Symbol] = k.Rank
 				}
 			}
-		case []score.PrettyResponse:
+		case []dataTypes.TopData:
 			{
 				for _, k := range v {
 					if rank, ok := nameToRankMap[k.Symbol]; ok {
