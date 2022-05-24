@@ -2,10 +2,11 @@ package score_test
 
 import (
 	"encoding/json"
-	"github.com/Pavlico/topcoin/services/coinmarket/dataTypes"
-	"github.com/Pavlico/topcoin/services/coinmarket/score"
 	"net/http"
 	"testing"
+
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/dataTypes"
+	"github.com/Pavlico/topcoin/services/coinmarket/internal/score"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
