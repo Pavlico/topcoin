@@ -6,8 +6,8 @@ import (
 
 	scoreTypes "github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
-	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/internal/dataTypes"
-	"github.com/Pavlico/topcoin/services/cryptocompare/internal/top"
+	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
+	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
 	"github.com/Pavlico/topcoin/services/topcollector/internal/conf"
 )
 
