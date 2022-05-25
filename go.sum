@@ -1,9 +1,9 @@
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525132932-1d29535e1927 h1:63Y+dBegDwZT4TUEGU3OyF3xiDkoosnjrq2DLVx0Cgs=
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525132932-1d29535e1927/go.mod h1:V3K6sy897Jdm9r8JjCNTDI9493PxOM4tBlkce1DEMHA=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed h1:YYYMqO8Va+LB+SL+DdQRLs9/N5ScFevxb16sRq5JP9E=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed/go.mod h1:V3K6sy897Jdm9r8JjCNTDI9493PxOM4tBlkce1DEMHA=
 github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed h1:rKADzIWjIUIodWk2iKWNC/HNhtltnDQVsF7ymGBvquU=
 github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed/go.mod h1:9Urh6M5ydnv0724Jj1GDP4hw8ncaJAL0TnOADODvStE=
-github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525115628-092a2ae5baed h1:45f9+oKSTdCeU3XDZ9tRsbrMxRK5FVoVVdpFc22PfRo=
-github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525115628-092a2ae5baed/go.mod h1:e0kf8Vii5yuk05r5l5J3zj8P4QcupVRbq94Nqvi3qJY=
+github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525133655-c0021b6e2e67 h1:N42Lp8wFT/o+9LRYCXQxLzEOuM0in2Q7VqfjjloBN9w=
+github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525133655-c0021b6e2e67/go.mod h1:TTks6OdMdvwy7g0yMNJtw9Z94khl45DxPKL4rJ5+LVg=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
 github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
