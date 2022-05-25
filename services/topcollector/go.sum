@@ -1,5 +1,7 @@
 github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524133112-4d1fdc159e13 h1:4gcp8V9hsiIr2qmXhmFpWq74QimFmcgGltybZao5mIU=
 github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524133112-4d1fdc159e13/go.mod h1:aygof8DId+kF7De99uziAXPkuO7hmU4kX3YdYruWV1k=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525104047-83cd35f035ec h1:CErwFpfNENMIRBlQeURe6Nqf7Q4w0Sjyusw7CBjiaPI=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525104047-83cd35f035ec/go.mod h1:aygof8DId+kF7De99uziAXPkuO7hmU4kX3YdYruWV1k=
 github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525104047-83cd35f035ec h1:Y3YCh1lfNDOpzzEfGupw0z3UUnGBJ277BTtcRQullUw=
 github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525104047-83cd35f035ec/go.mod h1:JuLfWHL/S1739zTpXhtSMZDBhRiRrvdPokou76TRIm0=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
