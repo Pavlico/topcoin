@@ -1,7 +1,6 @@
 package assembler
 
 import (
-	"encoding/json"
 	"errors"
 
 	scoreTypes "github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
@@ -9,30 +8,34 @@ import (
 	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
+	coinTypes "github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
 )
 
-type PrettyResp struct {
-	Symbol string  `json:"Symbol"`
-	Rank   int     `json:"Rank"`
-	Score  float32 `json:"Score"`
-}
-
-func Get(reqTypes []string) (interface{}, error) {
+func Get(reqTypes []string) (map[int]*coinTypes.CoinData, error) {
 	dataToMerge := make(map[string]interface{})
+	var topData map[string]topTypes.TopData
 	for _, v := range reqTypes {
 		switch v {
 		case conf.TopApi:
-			data, err := top.Process()
+			topData, err := top.GetTopData()
 			if err != nil {
 				return nil, err
 			}
-			dataToMerge[v] = data
+			dataToMerge[v] = topData
 		case conf.ScoreApi:
-			data, err := score.Process()
+			_, ok := dataToMerge["top"]
+			if !ok {
+				return nil, errors.New("No top data")
+			}
+			var symbols []string
+			for symbol, _ := range topData {
+				symbols = append(symbols, symbol)
+			}
+			scoreData, err := score.GetScoreData(symbols)
 			if err != nil {
 				return nil, err
 			}
-			dataToMerge[v] = data
+			dataToMerge[v] = scoreData
 		}
 	}
 
@@ -40,33 +43,30 @@ func Get(reqTypes []string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	prettyMergedMap, err := PrettyPrint(mergedData)
-	if err != nil {
-		return nil, err
-	}
-	return string(prettyMergedMap), nil
+
+	return mergedData, nil
 }
 
-func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, error) {
+func AssembleData(dataToMerge map[string]interface{}) (map[int]*coinTypes.CoinData, error) {
 	minMergeAmount := 2
 	if len(dataToMerge) < minMergeAmount {
 		return nil, errors.New("Not enough data to merge")
 	}
-	mergedMap := make(map[int]*PrettyResp)
+	mergedMap := make(map[int]*coinTypes.CoinData)
 	nameToRankMap := make(map[string]int)
 	for _, m := range dataToMerge {
 		switch v := m.(type) {
-		case []scoreTypes.ScoreData:
+		case []topTypes.TopData:
 			{
 				for _, k := range v {
-					mergedMap[k.Rank] = &PrettyResp{
+					mergedMap[k.Rank] = &coinTypes.CoinData{
 						Rank:   k.Rank,
 						Symbol: k.Symbol,
 					}
 					nameToRankMap[k.Symbol] = k.Rank
 				}
 			}
-		case []topTypes.TopData:
+		case []scoreTypes.ScoreData:
 			{
 				for _, k := range v {
 					if rank, ok := nameToRankMap[k.Symbol]; ok {
@@ -77,8 +77,4 @@ func AssembleData(dataToMerge map[string]interface{}) (map[int]*PrettyResp, erro
 		}
 	}
 	return mergedMap, nil
-}
-
-func PrettyPrint(i interface{}) ([]byte, error) {
-	return json.MarshalIndent(i, "", "\t")
 }

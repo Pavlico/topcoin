@@ -14,39 +14,16 @@ import (
 	errorsPkg "github.com/pkg/errors"
 )
 
-type ScoreResponse struct {
-	Data map[string]ScoreResponseData `json:"data"`
-	ScoreResponseError
-}
-type ScoreResponseData struct {
-	Symbol string `json:"symbol"`
-	Score  struct {
-		Currency struct {
-			Price float32 `json:"price"`
-		} `json:"USD"`
-	} `json:"quote"`
-}
-
-type ScoreResponseError struct {
-	Status struct {
-		ErrorCode int `json:"error_code"`
-	} `json:"status"`
-}
-
-func Process(topData map[string]dataTypes.TopData) (map[string]dataTypes.ScoreData, error) {
+func GetScoreData(symbols []string) (map[string]dataTypes.ScoreData, error) {
 	client := getClient()
-	sResponse := ScoreResponse{}
+	sResponse := dataTypes.ScoreResponse{}
 	scoreData := make(map[string]dataTypes.ScoreData)
 	apiConf := conf.ApiConfig[conf.ScoreApi]
-	var symbols []string
-	for symbol, _ := range topData {
-		symbols = append(symbols, symbol)
-	}
-	req, err := sResponse.CreateRequest(apiConf, symbols)
+	req, err := CreateRequest(apiConf, symbols)
 	if err != nil {
 		return nil, err
 	}
-	response, err := sResponse.GetResponse(req, client)
+	response, err := GetResponse(req, client)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +31,7 @@ func Process(topData map[string]dataTypes.TopData) (map[string]dataTypes.ScoreDa
 	if err != nil {
 		return nil, err
 	}
-	err = sResponse.ValidateResponse(response)
+	err = ValidateResponse(sResponse)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +41,7 @@ func Process(topData map[string]dataTypes.TopData) (map[string]dataTypes.ScoreDa
 	return scoreData, nil
 }
 
-func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
+func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
 		return nil, errorsPkg.Wrap(err, "Error during sendig SCORE request")
@@ -76,7 +53,7 @@ func (sResponse ScoreResponse) GetResponse(req *http.Request, client http.Client
 	defer response.Body.Close()
 	return responseData, nil
 }
-func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
+func ValidateResponse(sResponse dataTypes.ScoreResponse) error {
 
 	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
 		return errors.New("Response SCORE not valid")
@@ -84,7 +61,7 @@ func (sResponse ScoreResponse) ValidateResponse(response []byte) error {
 	return nil
 }
 
-func (sResponse ScoreResponse) CreateRequest(apiData conf.ApiData, symbols []string) (*http.Request, error) {
+func CreateRequest(apiData conf.ApiData, symbols []string) (*http.Request, error) {
 	param := url.Values{}
 	for i, val := range apiData.Options {
 		param.Add(i, val)
