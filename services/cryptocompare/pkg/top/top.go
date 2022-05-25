@@ -12,22 +12,9 @@ import (
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
 )
 
-type TopResponse struct {
-	Data []TopResponseData `json:"Data"`
-	TopResponseError
-}
-type TopResponseData struct {
-	CoinInfo struct {
-		Symbol string `json:"Name"`
-	} `json:"CoinInfo"`
-}
-type TopResponseError struct {
-	Message string `json:"Message"`
-}
-
-func Process() (map[string]dataTypes.TopData, error) {
+func GetTopData() (map[string]dataTypes.TopData, error) {
 	client := getClient()
-	tResponse := TopResponse{}
+	tResponse := dataTypes.TopResponse{}
 	topData := make(map[string]dataTypes.TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
 	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
@@ -36,11 +23,11 @@ func Process() (map[string]dataTypes.TopData, error) {
 	}
 	for i := 0; i < pageNumInt; i++ {
 		currentPage := strconv.Itoa(i)
-		req, err := tResponse.CreateRequest(apiConf, currentPage)
+		req, err := CreateRequest(apiConf, currentPage)
 		if err != nil {
 			return nil, err
 		}
-		response, err := tResponse.GetResponse(req, client)
+		response, err := GetResponse(req, client)
 		if err != nil {
 			return nil, err
 		}
@@ -48,7 +35,7 @@ func Process() (map[string]dataTypes.TopData, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = tResponse.ValidateResponse()
+		err = ValidateResponse(tResponse)
 		if err != nil {
 			return nil, err
 		}
@@ -59,14 +46,14 @@ func Process() (map[string]dataTypes.TopData, error) {
 	return topData, nil
 }
 
-func (tResponse TopResponse) ValidateResponse() error {
+func ValidateResponse(tResponse dataTypes.TopResponse) error {
 	if tResponse.TopResponseError.Message != conf.SuccessMessage {
 		return errors.New("Response TOP is not valid")
 	}
 	return nil
 }
 
-func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) ([]byte, error) {
+func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	response, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -79,7 +66,7 @@ func (tResponse TopResponse) GetResponse(req *http.Request, client http.Client) 
 	return responseData, nil
 }
 
-func (tr TopResponse) CreateRequest(apiData conf.ApiData, currentPage string) (*http.Request, error) {
+func CreateRequest(apiData conf.ApiData, currentPage string) (*http.Request, error) {
 	param := url.Values{}
 	apiData.Options[conf.PageParam] = currentPage
 	for i, val := range apiData.Options {

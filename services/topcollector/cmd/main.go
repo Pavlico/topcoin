@@ -6,6 +6,7 @@ import (
 
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/assembler"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/flags"
+	prettifier "github.com/Pavlico/topcoin/services/topcollector/pkg/utils"
 )
 
 func main() {
@@ -19,5 +20,10 @@ func main() {
 		log.Println(err)
 		return
 	}
-	fmt.Println(data)
+	prettyMergedMap, err := prettifier.PrettyPrint(data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(string(prettyMergedMap))
 }

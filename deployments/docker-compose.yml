@@ -2,13 +2,39 @@ version: '3'
 
 services:
   app:
-    container_name: topcoin
+    container_name: http_service_topcoin
     build:
       context: ./../
-      dockerfile: ./build/package/dockerfile
+      dockerfile: ./build/dockerfile
     ports:
       - 8080:8080
-    restart: on-failure:10
+    volumes:
+      - ./../:/usr/src/app
+  topcollector:
+    container_name: topcollector
+    build:
+      context: ./../services/topcollector
+      dockerfile: ./build/dockerfile
+    ports:
+      - 8081:8081
+    volumes:
+      - ./../:/usr/src/app
+  coinmarket:
+    container_name: coinmarket
+    build:
+      context: ./../services/coinmarket
+      dockerfile: ./build/dockerfile
+    ports:
+      - 8082:8082
+    volumes:
+      - ./../:/usr/src/app
+  cryptocompare:
+    container_name: cryptocompare
+    build:
+      context: ./../services/cryptocompare
+      dockerfile: ./build/dockerfile
+    ports:
+      - 8083:8083
     volumes:
       - ./../:/usr/src/app
 volumes:
