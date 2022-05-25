@@ -10,7 +10,7 @@ import (
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
 )
 
-func Get(reqTypes []string, outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
+func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
 	topData, err := top.GetTopData()
 	if err != nil {
 		errorChan <- err
