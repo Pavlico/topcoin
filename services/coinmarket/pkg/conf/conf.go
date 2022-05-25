@@ -12,6 +12,7 @@ const Convert = "convert"
 const SkipInvalid = "skip_invalid"
 const SymbolParam = "symbol"
 const ApiTimeout = 5
+const EmptyValue = ""
 
 var ApiConfig = map[string]ApiData{
 	TopApi: {

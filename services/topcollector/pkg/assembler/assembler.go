@@ -16,7 +16,7 @@ func Get(reqTypes []string, outputChan chan<- []dataTypes.CoinData, errorChan ch
 		errorChan <- err
 	}
 	var symbols []string
-	for symbol, _ := range topData {
+	for symbol := range topData {
 		symbols = append(symbols, symbol)
 	}
 	scoreData, err := score.GetScoreData(symbols)
