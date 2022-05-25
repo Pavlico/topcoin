@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -40,7 +39,6 @@ func GetScoreData(symbols []string) (map[string]dataTypes.ScoreData, error) {
 	for _, v := range sResponse.Data {
 		scoreData[v.Symbol] = dataTypes.ScoreData{Symbol: v.Symbol, Score: v.Score.Currency.Price}
 	}
-	log.Println(scoreData)
 	return scoreData, nil
 }
 
