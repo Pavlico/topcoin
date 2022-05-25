@@ -1,12 +1,12 @@
 package main
 
-func main() {
-	// serverManager := server.ServerStarterStruct{}
-	// serviceHandler := handler.ServiceStruct{}
-	// arg.MustParse(&args)
-	// ea := envArgs.Args{Port: args.Port, Cachetime: args.Cachetime}
-	// serviceHandler.InitServices()
-	// router := routes.GetAvailableRoutes(ea, serviceHandler)
-	// serverManager.Serve(serviceHandler, ea, router)
+import (
+	"github.com/Pavlico/topcoin/internal/routes"
+	"github.com/Pavlico/topcoin/internal/server"
+)
 
+func main() {
+	serverManager := server.ServerStarterStruct{}
+	router := routes.GetAvailableRoutes()
+	serverManager.Serve(router)
 }

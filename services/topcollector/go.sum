@@ -1,9 +1,9 @@
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524133112-4d1fdc159e13 h1:4gcp8V9hsiIr2qmXhmFpWq74QimFmcgGltybZao5mIU=
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220524133112-4d1fdc159e13/go.mod h1:aygof8DId+kF7De99uziAXPkuO7hmU4kX3YdYruWV1k=
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525104047-83cd35f035ec h1:CErwFpfNENMIRBlQeURe6Nqf7Q4w0Sjyusw7CBjiaPI=
-github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525104047-83cd35f035ec/go.mod h1:aygof8DId+kF7De99uziAXPkuO7hmU4kX3YdYruWV1k=
-github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525104047-83cd35f035ec h1:Y3YCh1lfNDOpzzEfGupw0z3UUnGBJ277BTtcRQullUw=
-github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525104047-83cd35f035ec/go.mod h1:JuLfWHL/S1739zTpXhtSMZDBhRiRrvdPokou76TRIm0=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525112924-117bf3ab2d11 h1:rvOCX6IF+1wAWN23xgEC9DVufZKcv1zAOFX0/X5e+MU=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525112924-117bf3ab2d11/go.mod h1:V3K6sy897Jdm9r8JjCNTDI9493PxOM4tBlkce1DEMHA=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed h1:YYYMqO8Va+LB+SL+DdQRLs9/N5ScFevxb16sRq5JP9E=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed/go.mod h1:V3K6sy897Jdm9r8JjCNTDI9493PxOM4tBlkce1DEMHA=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed h1:rKADzIWjIUIodWk2iKWNC/HNhtltnDQVsF7ymGBvquU=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed/go.mod h1:9Urh6M5ydnv0724Jj1GDP4hw8ncaJAL0TnOADODvStE=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=

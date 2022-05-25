@@ -1,0 +1,10 @@
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed h1:YYYMqO8Va+LB+SL+DdQRLs9/N5ScFevxb16sRq5JP9E=
+github.com/Pavlico/topcoin/services/coinmarket v0.0.0-20220525115628-092a2ae5baed/go.mod h1:V3K6sy897Jdm9r8JjCNTDI9493PxOM4tBlkce1DEMHA=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed h1:rKADzIWjIUIodWk2iKWNC/HNhtltnDQVsF7ymGBvquU=
+github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220525115628-092a2ae5baed/go.mod h1:9Urh6M5ydnv0724Jj1GDP4hw8ncaJAL0TnOADODvStE=
+github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525115628-092a2ae5baed h1:45f9+oKSTdCeU3XDZ9tRsbrMxRK5FVoVVdpFc22PfRo=
+github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525115628-092a2ae5baed/go.mod h1:e0kf8Vii5yuk05r5l5J3zj8P4QcupVRbq94Nqvi3qJY=
+github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
+github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
+github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
