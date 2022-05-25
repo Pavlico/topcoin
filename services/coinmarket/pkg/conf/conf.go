@@ -15,17 +15,6 @@ const ApiTimeout = 5
 const EmptyValue = ""
 
 var ApiConfig = map[string]ApiData{
-	TopApi: {
-		ApiAddress:        "https://min-api.cryptocompare.com",
-		EndPoint:          "/data/top/totalvolfull?",
-		Credentials:       "93d94cc6b38c0c4ed61c744e74d9ecd14223f427b14aea9e7f68f9ca72a5ab7",
-		CredentialsHeader: "x-api-key",
-		Options: map[string]string{
-			PageParam:  "2",
-			LimitParam: "100",
-			TsymParam:  UsdCurrency,
-		},
-	},
 	ScoreApi: {
 		ApiAddress:        "https://pro-api.coinmarketcap.com",
 		EndPoint:          "/v1/cryptocurrency/quotes/latest?",

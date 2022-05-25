@@ -18,7 +18,7 @@ func GetTopData() (map[string]dataTypes.TopData, error) {
 	tResponse := dataTypes.TopResponse{}
 	topData := make(map[string]dataTypes.TopData)
 	apiConf := conf.ApiConfig[conf.TopApi]
-	pageNumInt, err := strconv.Atoi(apiConf.Options[conf.PageParam])
+	pageNumInt, err := strconv.Atoi(apiConf.PageParam)
 	if err != nil {
 		return nil, err
 	}
