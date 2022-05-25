@@ -14,5 +14,10 @@ func main() {
 		log.Println(err)
 		return
 	}
-	fmt.Println(prettifier.PrettyPrint(data))
+	prettyData, err := prettifier.PrettyPrint(data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(string(prettyData))
 }
