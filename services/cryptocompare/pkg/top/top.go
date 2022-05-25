@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/conf"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
@@ -84,7 +85,7 @@ func CreateRequest(apiData conf.ApiData, currentPage string) (*http.Request, err
 
 func getClient() http.Client {
 	client := http.Client{
-		Timeout: conf.ApiTimeout,
+		Timeout: conf.ApiTimeout * time.Second,
 	}
 	return client
 }

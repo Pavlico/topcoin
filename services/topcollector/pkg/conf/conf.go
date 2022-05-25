@@ -9,6 +9,7 @@ const UsdCurrency = "USD"
 const SuccessMessage = "Success"
 const NoErrorCode = 0
 const Aux = "aux"
+const ApiTimeout = 2
 
 var ApiConfig = map[string]ApiData{
 	TopApi: {
@@ -24,12 +25,11 @@ var ApiConfig = map[string]ApiData{
 	},
 	ScoreApi: {
 		ApiAddress:        "https://pro-api.coinmarketcap.com",
-		EndPoint:          "/v1/cryptocurrency/listings/latest?",
+		EndPoint:          "/v1/cryptocurrency/quotes/latest?",
 		Credentials:       "18f09716-386e-440a-8906-551d607d1574",
 		CredentialsHeader: "X-CMC_PRO_API_KEY",
 		Options: map[string]string{
-			LimitParam: "500",
-			Aux:        "",
+			Aux: "",
 		},
 	},
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
@@ -54,7 +55,6 @@ func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	return responseData, nil
 }
 func ValidateResponse(sResponse dataTypes.ScoreResponse) error {
-
 	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
 		return errors.New("Response SCORE not valid")
 	}
@@ -78,7 +78,7 @@ func CreateRequest(apiData conf.ApiData, symbols []string) (*http.Request, error
 
 func getClient() http.Client {
 	client := http.Client{
-		Timeout: conf.ApiTimeout,
+		Timeout: conf.ApiTimeout * time.Second,
 	}
 	return client
 }
