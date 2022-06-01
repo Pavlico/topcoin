@@ -5,11 +5,10 @@ import (
 
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/assembler"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
-	prettifier "github.com/Pavlico/topcoin/services/topcollector/pkg/utils"
 	errorsPkg "github.com/pkg/errors"
 )
 
-func GetTopCoin() ([]byte, error) {
+func GetTopCoin() ([]dataTypes.CoinData, error) {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	outputChan := make(chan []dataTypes.CoinData)
@@ -24,10 +23,6 @@ func GetTopCoin() ([]byte, error) {
 		}
 		return nil, err
 	case v := <-outputChan:
-		prettyResp, err := prettifier.PrettyPrint(v)
-		if err != nil {
-			return nil, err
-		}
-		return prettyResp, err
+		return v, nil
 	}
 }

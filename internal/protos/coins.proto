@@ -1,0 +1,18 @@
+syntax="proto3";
+
+service Coins {
+    rpc GetCoins(CoinRequest) returns (TopCoinsResponse);
+}
+
+message CoinData {
+    string Symbol = 1;
+    int32 Rank = 2;
+    float Score = 3;
+}
+
+message TopCoinsResponse {
+    repeated CoinData coins = 1;
+}
+message CoinRequest {
+
+}

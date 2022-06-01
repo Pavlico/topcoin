@@ -10,6 +10,9 @@ run-app-bg:
 bash:
 	cd ./deployments && docker-compose exec app bash
 
+bash-grpc:
+	cd ./deployments && docker-compose exec grpcapp bash
+
 lint:
 	docker run --rm -v `pwd`:/app -w /app golangci/golangci-lint golangci-lint run -v
 
@@ -18,3 +21,8 @@ run-tests:
 
 run-tests-coverage:
 	cd ./deployments && docker-compose exec app go test ./... -coverprofile tmp/coverage.out
+
+.PHONY: protos
+
+protos:
+	 protoc -I internal/protos/ internal/protos/coins.proto --go_out=plugins=grpc:internal/protos/coins
