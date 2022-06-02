@@ -10,6 +10,15 @@ services:
       - 8080:8080
     volumes:
       - ./../:/usr/src/app
+  grpcapp:
+    container_name: grpc_service_topcoin
+    build:
+      context: ./../
+      dockerfile: ./build/grpc/dockerfile
+    ports:
+      - 8090:8090
+    volumes:
+      - ./../:/usr/src/app
   topcollector:
     container_name: topcollector
     build:

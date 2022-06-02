@@ -4,13 +4,18 @@ import (
 	"net/http"
 
 	"github.com/Pavlico/topcoin/internal/coinservice"
-	"github.com/julienschmidt/httprouter"
+	"github.com/Pavlico/topcoin/internal/utils/prettifier"
 )
 
-func GetCoins(w http.ResponseWriter, r *http.Request, ps httprouter.Params) ([]byte, int) {
-	result, err := coinservice.GetTopCoin()
+func GetCoins(w http.ResponseWriter, r *http.Request) ([]byte, int) {
+	coins, err := coinservice.GetTopCoin()
 	if err != nil {
-		return result, http.StatusInternalServerError
+		return nil, http.StatusInternalServerError
 	}
+	result, err := prettifier.PrettyPrint(coins)
+	if err != nil {
+		return nil, http.StatusInternalServerError
+	}
+
 	return result, http.StatusOK
 }

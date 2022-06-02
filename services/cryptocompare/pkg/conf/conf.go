@@ -1,7 +1,8 @@
 package conf
 
+import "github.com/spf13/viper"
+
 const TopApi = "top"
-const ScoreApi = "score"
 const PageParam = "page"
 const LimitParam = "limit"
 const TsymParam = "tsym"
@@ -9,7 +10,6 @@ const UsdCurrency = "USD"
 const SuccessMessage = "Success"
 const NoErrorCode = 0
 const Convert = "convert"
-const SkipInvalid = "skip_invalid"
 const SymbolParam = "symbol"
 const ApiTimeout = 5
 
@@ -35,4 +35,31 @@ type ApiData struct {
 	CredentialsHeader string
 	PageParam         string
 	Options           map[string]string
+}
+
+type Config struct {
+	TopApi         string
+	PageParam      string
+	LimitParam     string
+	TsymParam      string
+	UsdCurrency    string
+	SuccessMessage string
+	NoErrorCode    int
+	Convert        string
+	SymbolParam    string
+	ApiTimeout     int
+}
+
+func LoadConfig() (*viper.Viper, error) {
+	v := viper.New()
+	v.AddConfigPath(".")
+	v.SetConfigName("service")
+	v.SetConfigType("json")
+	// viper.AutomaticEnv()
+	err := v.ReadInConfig()
+	if err != nil {
+		return v, err
+	}
+
+	return v, nil
 }

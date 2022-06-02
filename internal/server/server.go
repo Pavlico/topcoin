@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/Pavlico/topcoin/internal/handler"
 )
 
 type ServerStarter interface {
@@ -18,6 +18,10 @@ type ServerStarter interface {
 }
 
 type ServerStarterStruct struct {
+}
+
+func InitServer() *ServerStarterStruct {
+	return &ServerStarterStruct{}
 }
 
 func createChannel() (chan os.Signal, func()) {
@@ -49,10 +53,12 @@ func shutdown(ctx context.Context, server *http.Server) {
 	}
 }
 
-func (ss *ServerStarterStruct) Serve(router *httprouter.Router) {
+func (ss *ServerStarterStruct) Serve() {
+	routes := http.NewServeMux()
+	routes.HandleFunc("/top", handler.GetCoins())
 	s := &http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: routes,
 	}
 	go start(s)
 	stopCh, closeCh := createChannel()
