@@ -25,10 +25,10 @@ services:
     restart: always
     ports:
       - 8096:80
-  appDb:
+  appdb:
     container_name: mysql
     image: mysql:5.7
-    restart: always
+    # restart: always
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: password123
@@ -39,7 +39,7 @@ services:
       - "8095:8094"
     volumes:
       - database:/var/lib/mysql
-      - ./db/:/docker-entrypoint-initdb.d
+      - /home/pwasi/Desktop/golang/topcoin/deployments/db/:/docker-entrypoint-initdb.d
   topcollector:
     container_name: topcollector
     build:

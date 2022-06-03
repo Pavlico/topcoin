@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
@@ -38,19 +37,16 @@ type DbService interface {
 	Exists(id string) bool
 }
 
-func Initialize(errorChan chan<- error) DbServiceStruct {
+func Initialize() (DbServiceStruct, error) {
 	db, err := Connect()
 	if err != nil {
-		errorChan <- err
+		return DbServiceStruct{}, err
 	}
-	log.Println("test")
-
 	pingErr := db.Ping()
 	if pingErr != nil {
-		log.Fatal(pingErr)
+		return DbServiceStruct{}, pingErr
 	}
-	log.Println("test")
-	return DbServiceStruct{Database: db}
+	return DbServiceStruct{Database: db}, nil
 }
 
 func dsn() string {
