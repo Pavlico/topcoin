@@ -12,7 +12,10 @@ import (
 )
 
 func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
-	db := database.Initialize(errorChan)
+	db, err := database.Initialize()
+	if err != nil {
+		errorChan <- err
+	}
 	topData, err := top.GetTopData()
 	if err != nil {
 		errorChan <- err

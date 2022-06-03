@@ -11,7 +11,7 @@ func GetDbCredentials() dbCredentials {
 	return dbCredentials{
 		Username: "admin",
 		Password: "password123",
-		Hostname: "appDb:8094",
+		Hostname: "appdb:8094",
 		DbName:   "coins",
 	}
 }
