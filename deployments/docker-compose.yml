@@ -53,6 +53,15 @@ services:
       - 8070:8070
     volumes:
       - ./../:/usr/src/app
+  cron:
+    container_name: cron
+    build:
+      context: ./../services/cron
+      dockerfile: ./build/dockerfile
+    ports:
+      - 8075:8075
+    volumes:
+      - ./../:/usr/src/app
   coinmarket:
     container_name: coinmarket
     build:
