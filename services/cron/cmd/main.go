@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Pavlico/topcoin/internal/database"
+	"github.com/Pavlico/topcoin/services/dbservice/pkg/database"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/assembler"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
 )

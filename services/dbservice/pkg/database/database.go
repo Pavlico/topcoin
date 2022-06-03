@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/Pavlico/topcoin/services/database/pkg/conf"
+	"github.com/Pavlico/topcoin/services/dbservice/pkg/conf"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
 	"github.com/go-sql-driver/mysql"
 )
