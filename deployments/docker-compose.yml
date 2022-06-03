@@ -10,6 +10,10 @@ services:
       - 8080:8080
     volumes:
       - ./../:/usr/src/app
+    depends_on:
+      - db
+    links:
+      - db
   grpcapp:
     container_name: grpc_service_topcoin
     build:
@@ -25,20 +29,20 @@ services:
     restart: always
     ports:
       - 8096:80
-  appdb:
+  db:
     container_name: mysql
-    image: mysql:5.7
-    # restart: always
+    image: mysql:8.0
+    restart: always
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: password123
-      MYSQL_DATABASE: microservice
+      MYSQL_DATABASE: coins
       MYSQL_USER: admin
       MYSQL_PASSWORD: password123
     ports:
-      - "8095:8094"
+      - "3306:3306"
     volumes:
-      - database:/var/lib/mysql
+      - db:/var/lib/mysql
       - /home/pwasi/Desktop/golang/topcoin/deployments/db/:/docker-entrypoint-initdb.d
   topcollector:
     container_name: topcollector
@@ -68,4 +72,4 @@ services:
     volumes:
       - ./../:/usr/src/app
 volumes:
-  database: { }
+  db: { }
