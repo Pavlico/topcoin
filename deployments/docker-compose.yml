@@ -19,6 +19,27 @@ services:
       - 8090:8090
     volumes:
       - ./../:/usr/src/app
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - 8096:80
+  appDb:
+    container_name: mysql
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: microservice
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password123
+    ports:
+      - "8095:8094"
+    volumes:
+      - database:/var/lib/mysql
+      - ./db/:/docker-entrypoint-initdb.d
   topcollector:
     container_name: topcollector
     build:
@@ -46,3 +67,5 @@ services:
       - 8050:8050
     volumes:
       - ./../:/usr/src/app
+volumes:
+  database: { }

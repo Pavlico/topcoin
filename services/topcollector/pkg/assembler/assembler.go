@@ -8,9 +8,11 @@ import (
 	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/database"
 )
 
 func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
+	db := database.Initialize(errorChan)
 	topData, err := top.GetTopData()
 	if err != nil {
 		errorChan <- err
@@ -27,6 +29,13 @@ func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx con
 	if err != nil {
 		errorChan <- err
 	}
+	for _, v := range mergedData {
+		err := db.Save(v.Symbol, v.Rank, v.Score)
+		if err != nil {
+			errorChan <- err
+		}
+	}
+
 	outputChan <- mergedData
 
 }
