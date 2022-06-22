@@ -1,0 +1,17 @@
+syntax="proto3";
+
+service Cryptocompare {
+    rpc GetTop(TopRequest) returns (TopResponse);
+}
+
+message TopData {
+    string Symbol = 1;
+    int32 Rank = 2;
+}
+
+message TopResponse {
+    map<string, TopData> ranks = 1;
+} 
+message TopRequest {
+
+}

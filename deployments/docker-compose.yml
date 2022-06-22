@@ -71,6 +71,15 @@ services:
       - 8060:8060
     volumes:
       - ./../:/usr/src/app
+  grpccoinmarket:
+    container_name: grpc_coinmarket
+    build:
+      context: ./../services/coinmarket
+      dockerfile: ./build/grpc/dockerfile
+    ports:
+      - 8061:8061
+    volumes:
+      - ./../:/usr/src/app
   cryptocompare:
     container_name: cryptocompare
     build:
@@ -78,6 +87,15 @@ services:
       dockerfile: ./build/dockerfile
     ports:
       - 8050:8050
+    volumes:
+      - ./../:/usr/src/app
+  grpccryptocompare:
+    container_name: grpc_cryptocompare
+    build:
+      context: ./../services/cryptocompare
+      dockerfile: ./build/grpc/dockerfile
+    ports:
+      - 8051:8051
     volumes:
       - ./../:/usr/src/app
 volumes:

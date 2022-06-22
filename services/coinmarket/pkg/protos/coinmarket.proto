@@ -1,0 +1,17 @@
+syntax="proto3";
+
+service Coinmarket {
+    rpc GetScore(ScoreRequest) returns (ScoreResponse);
+}
+
+message ScoreData {
+    string Symbol = 1;
+    float Score = 2;
+}
+
+message ScoreResponse {
+    map<string, ScoreData> scores = 1;
+} 
+message ScoreRequest {
+
+}
