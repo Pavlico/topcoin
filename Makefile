@@ -32,3 +32,6 @@ protos-cryptocompare:
 
 protos-coinmarket:
 	 protoc -I services/coinmarket/pkg/protos/ services/coinmarket/pkg/protos/coinmarket.proto --go_out=plugins=grpc:services/coinmarket/pkg/protos/coinmarket
+
+protos-topcollector:
+	 protoc -I services/topcollector/pkg/protos/ services/topcollector/pkg/protos/topcollector.proto --go_out=plugins=grpc:services/topcollector/pkg/protos/topcollector

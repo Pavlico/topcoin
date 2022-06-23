@@ -53,6 +53,15 @@ services:
       - 8070:8070
     volumes:
       - ./../:/usr/src/app
+  grpctopcollector:
+    container_name: grpc_topcollector
+    build:
+      context: ./../services/topcollector
+      dockerfile: ./build/grpc/dockerfile
+    ports:
+      - 8071:8071
+    volumes:
+      - ./../:/usr/src/app
   cron:
     container_name: cron
     build:

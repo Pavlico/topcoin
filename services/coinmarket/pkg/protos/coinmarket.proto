@@ -13,5 +13,5 @@ message ScoreResponse {
     map<string, ScoreData> scores = 1;
 } 
 message ScoreRequest {
-
+    repeated string symbols = 1;
 }
