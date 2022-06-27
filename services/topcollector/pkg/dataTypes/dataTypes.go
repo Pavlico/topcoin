@@ -6,12 +6,15 @@ type CoinData struct {
 	Score  float32 `json:"Score"`
 }
 
+// type TopResponse struct {
+// 	Data map[string]TopData
+// }
 type TopData struct {
-	Symbol string
-	Rank   int
+	Symbol string `json:"Symbol"`
+	Rank   int    `json:"Rank"`
 }
 
 type ScoreData struct {
-	Symbol string
-	Score  float32
+	Symbol string  `json:"Symbol"`
+	Score  float32 `json:"Score"`
 }

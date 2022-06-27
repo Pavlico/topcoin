@@ -3,7 +3,6 @@ module github.com/Pavlico/topcoin/services/cryptocompare
 go 1.18
 
 require (
-	github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525104047-83cd35f035ec
 	github.com/golang/protobuf v1.5.2
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
 	github.com/spf13/viper v1.12.0

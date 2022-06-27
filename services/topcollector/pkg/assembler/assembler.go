@@ -2,13 +2,17 @@ package assembler
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
-	scoreTypes "github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
-	topTypes "github.com/Pavlico/topcoin/services/cryptocompare/pkg/dataTypes"
-	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/database"
+	errorsPkg "github.com/pkg/errors"
 )
 
 func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx context.Context) {
@@ -16,15 +20,15 @@ func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx con
 	if err != nil {
 		errorChan <- err
 	}
-	topData, err := top.GetTopData()
+	topData, err := getTopData()
 	if err != nil {
 		errorChan <- err
 	}
 	var symbols []string
-	for symbol := range topData {
-		symbols = append(symbols, symbol)
+	for _, v := range topData {
+		symbols = append(symbols, v.Symbol)
 	}
-	scoreData, err := score.GetScoreData(symbols)
+	scoreData, err := getScoreData(symbols)
 	if err != nil {
 		//place for logger
 	}
@@ -42,13 +46,48 @@ func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx con
 	outputChan <- mergedData
 
 }
+func getTopData() (map[string]*dataTypes.TopData, error) {
+	client := getClient()
+	tResponse := make(map[string]*dataTypes.TopData)
+	req, err := createRequest("http://cryptocompare:8050/top100", []string{})
+	if err != nil {
+		return tResponse, err
+	}
+	response, err := getResponse(req, client)
+	if err != nil {
+		return tResponse, err
+	}
+	err = json.Unmarshal(response, &tResponse)
+	if err != nil {
+		return tResponse, err
+	}
+	return tResponse, nil
+}
 
-func AssembleData(topData map[string]topTypes.TopData, scoreData map[string]scoreTypes.ScoreData) ([]dataTypes.CoinData, error) {
+func getScoreData(symbols []string) (map[string]*dataTypes.ScoreData, error) {
+	client := getClient()
+	sResponse := make(map[string]*dataTypes.ScoreData)
+	req, err := createRequest("http://coinmarket:8060/scores?", symbols)
+	if err != nil {
+		return nil, err
+	}
+	response, err := getResponse(req, client)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(response, &sResponse)
+	if err != nil {
+		return nil, err
+	}
+	return sResponse, nil
+}
+
+func AssembleData(topData map[string]*dataTypes.TopData, scoreData map[string]*dataTypes.ScoreData) ([]dataTypes.CoinData, error) {
 	mergedData := []dataTypes.CoinData{}
-	for symbol, data := range topData {
-		scoreVal, ok := scoreData[symbol]
+	for _, data := range topData {
+		scoreVal, ok := scoreData[data.Symbol]
 		if !ok {
-			scoreVal = scoreTypes.ScoreData{}
+			scoreVal = &dataTypes.ScoreData{}
 		}
 		mergedData = append(mergedData, mergeData(data.Symbol, data.Rank, scoreVal.Score))
 
@@ -62,4 +101,40 @@ func mergeData(symbol string, rank int, score float32) dataTypes.CoinData {
 		Rank:   rank,
 		Score:  score,
 	}
+}
+
+func createRequest(endpoint string, symbols []string) (*http.Request, error) {
+	param := url.Values{}
+
+	if len(symbols) > 0 {
+		param.Add(conf.SymbolParam, strings.Join(symbols, ","))
+	}
+	url := endpoint + param.Encode()
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+
+}
+
+func getResponse(req *http.Request, client http.Client) ([]byte, error) {
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, errorsPkg.Wrap(err, "Error during sendiNG request")
+	}
+	defer response.Body.Close()
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, errorsPkg.Wrap(err, "Error during reading response data")
+	}
+	return responseData, nil
+}
+
+func getClient() http.Client {
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	return client
 }

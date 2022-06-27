@@ -1,0 +1,18 @@
+syntax="proto3";
+
+service TopCollector {
+    rpc GetMergedData(TopCoinRequest) returns (TopCoinResponse);
+}
+
+message TopCoinData {
+    string Symbol = 1;
+    int32 Rank = 2;
+    float Score = 3;
+}
+
+message TopCoinResponse {
+    repeated TopCoinData coin = 1;
+} 
+message TopCoinRequest {
+
+}

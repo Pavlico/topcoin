@@ -14,21 +14,7 @@ services:
       - db
     links:
       - db
-  grpcapp:
-    container_name: grpc_service_topcoin
-    build:
-      context: ./../
-      dockerfile: ./build/grpc/dockerfile
-    ports:
-      - 8090:8090
-    volumes:
-      - ./../:/usr/src/app
-  phpmyadmin:
-    container_name: phpmyadmin
-    image: phpmyadmin/phpmyadmin:latest
-    restart: always
-    ports:
-      - 8096:80
+      - topcollector
   db:
     container_name: mysql
     image: mysql:8.0
@@ -53,15 +39,10 @@ services:
       - 8070:8070
     volumes:
       - ./../:/usr/src/app
-  grpctopcollector:
-    container_name: grpc_topcollector
-    build:
-      context: ./../services/topcollector
-      dockerfile: ./build/grpc/dockerfile
-    ports:
-      - 8071:8071
-    volumes:
-      - ./../:/usr/src/app
+    links:
+      - coinmarket
+      - cryptocompare
+      - db
   cron:
     container_name: cron
     build:
@@ -80,15 +61,6 @@ services:
       - 8060:8060
     volumes:
       - ./../:/usr/src/app
-  grpccoinmarket:
-    container_name: grpc_coinmarket
-    build:
-      context: ./../services/coinmarket
-      dockerfile: ./build/grpc/dockerfile
-    ports:
-      - 8061:8061
-    volumes:
-      - ./../:/usr/src/app
   cryptocompare:
     container_name: cryptocompare
     build:
@@ -96,15 +68,6 @@ services:
       dockerfile: ./build/dockerfile
     ports:
       - 8050:8050
-    volumes:
-      - ./../:/usr/src/app
-  grpccryptocompare:
-    container_name: grpc_cryptocompare
-    build:
-      context: ./../services/cryptocompare
-      dockerfile: ./build/grpc/dockerfile
-    ports:
-      - 8051:8051
     volumes:
       - ./../:/usr/src/app
 volumes:

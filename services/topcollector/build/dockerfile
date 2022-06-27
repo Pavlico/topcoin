@@ -9,3 +9,4 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -v -o /usr/local/bin/app ./cmd
 RUN go build -o ./tmp cmd/main.go
+CMD ["app"]
