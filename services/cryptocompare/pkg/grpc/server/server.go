@@ -4,6 +4,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/conf"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/grpc/handler"
 	protos "github.com/Pavlico/topcoin/services/cryptocompare/pkg/grpc/protos/cryptocompare"
 	"google.golang.org/grpc"
@@ -16,7 +17,7 @@ func Serve() {
 	protos.RegisterCryptocompareServer(gs, cs)
 
 	reflection.Register(gs)
-	l, err := net.Listen("tcp", ":8051")
+	l, err := net.Listen("tcp", conf.TopPort)
 	if err != nil {
 		os.Exit(1)
 	}

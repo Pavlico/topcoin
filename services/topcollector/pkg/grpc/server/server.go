@@ -4,6 +4,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/handler"
 	protos "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/protos/topcollector"
 	"google.golang.org/grpc"
@@ -16,7 +17,7 @@ func Serve() {
 	protos.RegisterTopCollectorServer(gs, cs)
 
 	reflection.Register(gs)
-	l, err := net.Listen("tcp", ":8050")
+	l, err := net.Listen("tcp", conf.TopCoinPort)
 	if err != nil {
 		os.Exit(1)
 	}

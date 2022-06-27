@@ -14,13 +14,16 @@ const SymbolParam = "symbol"
 const ApiTimeout = 5
 const EmptyValue = ""
 const CoinmarketUrl = "http://coinmarket:8060"
+const TopCollectorUrl = "http://topcollector:8070"
+const TopCollectorEndpoint = "/topcoins"
 const CoinmarketScoreEndpoint = "/score?"
 const CryptocompareUrl = "http://cryptocompare:8050"
 const CryptocompareTopEndpoint = "/top100"
 const EndPointTop = "/topcoins"
-const TopPort = ":8070"
+const TopCoinPort = ":8070"
 const ScorePort = ":8060"
-const ScoresEndpoint = "/scores"
+const AppPort = ":8080"
+const TopPort = "8050"
 
 var ApiConfig = map[string]ApiData{
 	ScoreApi: {

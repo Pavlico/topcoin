@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/http/handler"
 )
 
@@ -55,15 +56,11 @@ func shutdown(ctx context.Context, server *http.Server) {
 
 func (ss *ServerStarterStruct) Serve() {
 	routes := http.NewServeMux()
-	routes.HandleFunc("/topcoins", handler.GetMergedData())
+	routes.HandleFunc(conf.TopCoinEndpoint, handler.GetMergedData())
 	s := &http.Server{
-		Addr:    ":8070",
+		Addr:    conf.TopCoinPort,
 		Handler: routes,
 	}
-	// stopCh, closeCh := createChannel()
-	// closeCh()
-
-	// shutdown(context.Background(), s)
 	go start(s)
 	stopCh, closeCh := createChannel()
 	defer shutdown(context.Background(), s)
