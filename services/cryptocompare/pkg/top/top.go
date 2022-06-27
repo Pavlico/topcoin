@@ -59,11 +59,12 @@ func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer response.Body.Close()
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+
 	return responseData, nil
 }
 

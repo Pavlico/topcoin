@@ -1,23 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
-	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/top"
-	prettifier "github.com/Pavlico/topcoin/services/topcollector/pkg/utils"
+	grpcserver "github.com/Pavlico/topcoin/services/cryptocompare/pkg/grpc/server"
+	httpserver "github.com/Pavlico/topcoin/services/cryptocompare/pkg/http/server"
 )
 
 func main() {
-	data, err := top.GetTopData()
-	if err != nil {
-		log.Println(err)
-		return
+	if true {
+		serverManager := httpserver.InitServer()
+		serverManager.Serve()
 	}
-	prettyData, err := prettifier.PrettyPrint(data)
-	if err != nil {
-		log.Println(err)
-		return
+	if false {
+		grpcserver.Serve()
 	}
-	fmt.Println(string(prettyData))
 }

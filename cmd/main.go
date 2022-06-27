@@ -1,11 +1,16 @@
 package main
 
 import (
-	"github.com/Pavlico/topcoin/internal/server"
+	grpcserver "github.com/Pavlico/topcoin/internal/grpc/server"
+	httpserver "github.com/Pavlico/topcoin/internal/http/server"
 )
 
 func main() {
-
-	serverManager := server.InitServer()
-	serverManager.Serve()
+	if true {
+		serverManager := httpserver.InitServer()
+		serverManager.Serve()
+	}
+	if false {
+		grpcserver.Serve()
+	}
 }

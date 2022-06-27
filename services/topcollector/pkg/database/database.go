@@ -68,7 +68,7 @@ func (dss *DbServiceStruct) Save(symbol string, rank int, score float32) error {
 	if symbol == "" {
 		return errors.New("Wrong params")
 	}
-	_, err = tx.Exec("UPDATE topcoins SET rank = ? score = ? WHERE symbol = ?",
+	_, err = tx.Exec("UPDATE topcoins SET topcoins.rank = ?, topcoins.score = ? WHERE symbol = ?",
 		rank, score, symbol)
 	if err != nil {
 		return err

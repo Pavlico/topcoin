@@ -28,10 +28,10 @@ protos:
 	 protoc -I internal/protos/ internal/protos/coins.proto --go_out=plugins=grpc:internal/protos/coins
 
 protos-cryptocompare:
-	 protoc -I services/cryptocompare/pkg/protos/ services/cryptocompare/pkg/protos/cryptocompare.proto --go_out=plugins=grpc:services/cryptocompare/pkg/protos/cryptocompare
+	 protoc -I services/cryptocompare/pkg/protos/ services/cryptocompare/pkg/protos/cryptocompare.proto --go_out=plugins=grpc:services/cryptocompare/pkg/grpc/protos/cryptocompare
 
 protos-coinmarket:
-	 protoc -I services/coinmarket/pkg/protos/ services/coinmarket/pkg/protos/coinmarket.proto --go_out=plugins=grpc:services/coinmarket/pkg/protos/coinmarket
+	 protoc -I services/coinmarket/pkg/protos/ services/coinmarket/pkg/protos/coinmarket.proto --go_out=plugins=grpc:services/coinmarket/pkg/grpc/protos/coinmarket
 
 protos-topcollector:
-	 protoc -I services/topcollector/pkg/protos/ services/topcollector/pkg/protos/topcollector.proto --go_out=plugins=grpc:services/topcollector/pkg/protos/topcollector
+	 protoc -I services/topcollector/pkg/grpc/protos/ services/topcollector/pkg/grpc/protos/topcollector.proto --go_out=plugins=grpc:services/topcollector/pkg/grpc/protos/topcollector

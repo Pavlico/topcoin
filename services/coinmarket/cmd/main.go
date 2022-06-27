@@ -1,30 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/flags"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
-	prettifier "github.com/Pavlico/topcoin/services/topcollector/pkg/utils"
+	grpcserver "github.com/Pavlico/topcoin/services/coinmarket/pkg/grpc/server"
+	httpserver "github.com/Pavlico/topcoin/services/coinmarket/pkg/http/server"
 )
 
 func main() {
-	symbols := flags.GetFlagSymbols()
-	if symbols[0] == conf.EmptyValue {
-		fmt.Println("No symbols")
-		return
+	if true {
+		serverManager := httpserver.InitServer()
+		serverManager.Serve()
 	}
-	data, err := score.GetScoreData(symbols)
-	if err != nil {
-		log.Println(err)
-		return
+	if false {
+		grpcserver.Serve()
 	}
-	prettyData, err := prettifier.PrettyPrint(data)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Println(string(prettyData))
 }
