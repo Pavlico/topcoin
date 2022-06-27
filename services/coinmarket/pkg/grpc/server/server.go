@@ -4,6 +4,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/grpc/handler"
 	protos "github.com/Pavlico/topcoin/services/coinmarket/pkg/grpc/protos/coinmarket"
 	"google.golang.org/grpc"
@@ -16,7 +17,7 @@ func Serve() {
 	protos.RegisterCoinmarketServer(gs, cs)
 
 	reflection.Register(gs)
-	l, err := net.Listen("tcp", ":8061")
+	l, err := net.Listen("tcp", conf.ScorePort)
 	if err != nil {
 		os.Exit(1)
 	}

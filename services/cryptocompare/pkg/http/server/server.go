@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/conf"
 	"github.com/Pavlico/topcoin/services/cryptocompare/pkg/http/handler"
 )
 
@@ -55,9 +56,9 @@ func shutdown(ctx context.Context, server *http.Server) {
 
 func (ss *ServerStarterStruct) Serve() {
 	routes := http.NewServeMux()
-	routes.HandleFunc("/top100", handler.GetRanks())
+	routes.HandleFunc(conf.CryptocompareTopEndpoint, handler.GetRanks())
 	s := &http.Server{
-		Addr:    ":8050",
+		Addr:    conf.TopPort,
 		Handler: routes,
 	}
 	go start(s)

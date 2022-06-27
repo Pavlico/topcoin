@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/http/handler"
 )
 
@@ -55,9 +56,9 @@ func shutdown(ctx context.Context, server *http.Server) {
 
 func (ss *ServerStarterStruct) Serve() {
 	routes := http.NewServeMux()
-	routes.HandleFunc("/scores", handler.GetScores())
+	routes.HandleFunc(conf.ScoresEndpoint, handler.GetScores())
 	s := &http.Server{
-		Addr:    ":8060",
+		Addr:    conf.ScorePort,
 		Handler: routes,
 	}
 	go start(s)

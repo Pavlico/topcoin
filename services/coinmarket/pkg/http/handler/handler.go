@@ -8,10 +8,14 @@ import (
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/utils/response"
 )
 
+const symbolParam = "symbols"
+
+const commaSeparator = ","
+
 func GetScores() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		symbolsString := r.FormValue("symbols")
-		symbols := strings.Split(symbolsString, ",")
+		symbolsString := r.FormValue(symbolParam)
+		symbols := strings.Split(symbolsString, commaSeparator)
 		result, err := service.GetScores(symbols)
 		status := http.StatusOK
 		if err != nil {

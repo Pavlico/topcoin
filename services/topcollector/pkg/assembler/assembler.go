@@ -49,7 +49,7 @@ func Get(outputChan chan<- []dataTypes.CoinData, errorChan chan<- error, ctx con
 func getTopData() (map[string]*dataTypes.TopData, error) {
 	client := getClient()
 	tResponse := make(map[string]*dataTypes.TopData)
-	req, err := createRequest("http://cryptocompare:8050/top100", []string{})
+	req, err := createRequest(conf.CryptocompareUrl+conf.CryptocompareTopEndpoint, []string{})
 	if err != nil {
 		return tResponse, err
 	}
@@ -67,7 +67,7 @@ func getTopData() (map[string]*dataTypes.TopData, error) {
 func getScoreData(symbols []string) (map[string]*dataTypes.ScoreData, error) {
 	client := getClient()
 	sResponse := make(map[string]*dataTypes.ScoreData)
-	req, err := createRequest("http://coinmarket:8060/scores?", symbols)
+	req, err := createRequest(conf.CoinmarketUrl+conf.CoinmarketScoreEndpoint, symbols)
 	if err != nil {
 		return nil, err
 	}
@@ -103,13 +103,13 @@ func mergeData(symbol string, rank int, score float32) dataTypes.CoinData {
 	}
 }
 
-func createRequest(endpoint string, symbols []string) (*http.Request, error) {
+func createRequest(path string, symbols []string) (*http.Request, error) {
 	param := url.Values{}
 
 	if len(symbols) > 0 {
 		param.Add(conf.SymbolParam, strings.Join(symbols, ","))
 	}
-	url := endpoint + param.Encode()
+	url := path + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

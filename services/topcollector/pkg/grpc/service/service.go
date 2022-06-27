@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 	protosCoinmarket "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/protos/coinmarket"
 	protosCryptocompare "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/protos/cryptocompare"
 	protos "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/protos/topcollector"
@@ -31,7 +32,7 @@ func GetMergedData() ([]*protos.TopCoinData, error) {
 }
 
 func getTop() (*protosCryptocompare.TopResponse, error) {
-	conn, err := grpc.Dial("localhost:8050", grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.CryptocompareUrl, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,7 @@ func getTop() (*protosCryptocompare.TopResponse, error) {
 }
 
 func getScores(symbols []string) (*protosCoinmarket.ScoreResponse, error) {
-	conn, err := grpc.Dial("localhost:8060", grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.CoinmarketUrl, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
