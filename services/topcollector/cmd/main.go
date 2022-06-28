@@ -1,46 +1,29 @@
 package main
 
 import (
+	"log"
+
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/flags"
 	grpcserver "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/server"
 	httpserver "github.com/Pavlico/topcoin/services/topcollector/pkg/http/server"
 )
 
-const grpcType = "grpc"
-const defaultType = "default"
+const (
+	grpcType    = "grpc"
+	defaultType = "http"
+)
 
 func main() {
-	if true {
+	flagData := flags.GetFlagData()
+	if err := flagData.ValidateFlags(); err != nil {
+		log.Println(err)
+		return
+	}
+	if flagData.CommunicationType == defaultType {
 		serverManager := httpserver.InitServer()
 		serverManager.Serve()
 	}
-	if false {
+	if flagData.CommunicationType == grpcType {
 		grpcserver.Serve()
 	}
-	// ctx := context.Background()
-	// ctx, cancel := context.WithCancel(ctx)
-	// outputChan := make(chan []dataTypes.CoinData)
-	// errorChan := make(chan error)
-	// flagData := flags.GetFlagData()
-	// if flagData.RequestType == grpcType {
-	// 	go grpcshandler.NewCoinList().GetTopCoins(ctx, &protos.TopRequest{})
-	// }
-	// if flagData.RequestType == defaultType {
-	// 	go assembler.Get(outputChan, errorChan, ctx)
-	// }
-	// select {
-	// case err := <-errorChan:
-	// 	if errorsPkg.Unwrap(err) != nil {
-	// 		err = errorsPkg.Unwrap(err)
-	// 	}
-	// 	log.Println(err)
-	// 	cancel()
-	// 	return
-	// case v := <-outputChan:
-	// 	prettyResp, err := prettifier.PrettyPrint(v)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	}
-	// 	log.Println(string(prettyResp))
-	// 	return
-	// }
 }

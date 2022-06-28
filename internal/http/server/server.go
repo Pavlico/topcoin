@@ -13,15 +13,23 @@ import (
 	"github.com/Pavlico/topcoin/internal/http/handler"
 )
 
+const (
+	grpcType    = "grpc"
+	defaultType = "http"
+)
+
 type ServerStarter interface {
 	Serve(server *http.Server)
 }
 
 type ServerStarterStruct struct {
+	communicationType string
 }
 
-func InitServer() *ServerStarterStruct {
-	return &ServerStarterStruct{}
+func InitServer(communicationType string) *ServerStarterStruct {
+	return &ServerStarterStruct{
+		communicationType: communicationType,
+	}
 }
 
 func createChannel() (chan os.Signal, func()) {
@@ -55,7 +63,12 @@ func shutdown(ctx context.Context, server *http.Server) {
 
 func (ss *ServerStarterStruct) Serve() {
 	routes := http.NewServeMux()
-	routes.HandleFunc("/top", handler.GetCoins())
+	if ss.communicationType == defaultType {
+		routes.HandleFunc("/top", handler.GetCoinsHttp())
+	}
+	if ss.communicationType == grpcType {
+		routes.HandleFunc("/top", handler.GetCoinsGrpc())
+	}
 	s := &http.Server{
 		Addr:    ":8080",
 		Handler: routes,
