@@ -9,26 +9,24 @@ import (
 const emptyFlagValue = ""
 const emptyStringVal = ""
 const defaultTrheads = 4
-const defaultType = "default"
+const defaultType = "http"
 const flagCredentials = "credentials"
 const flagHelpMessage = "Some flag message"
 const flagRoutines = "routines"
 const flagType = "type"
 
 type FlagData struct {
-	ApiTypes    []string
-	MaxRoutines int
-	RequestType string
+	CommunicationType string
+	MaxRoutines       int
 }
 
 func GetFlagData() FlagData {
 	routines := flag.Int(flagRoutines, defaultTrheads, flagHelpMessage)
-	requestType := flag.String(flagType, defaultType, flagHelpMessage)
+	communicationType := flag.String(flagType, defaultType, flagHelpMessage)
 	flag.Parse()
 	return FlagData{
-		ApiTypes:    flag.Args(),
-		MaxRoutines: *routines,
-		RequestType: *requestType,
+		CommunicationType: *communicationType,
+		MaxRoutines:       *routines,
 	}
 }
 

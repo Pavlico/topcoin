@@ -2,19 +2,25 @@ package service
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/Pavlico/topcoin/internal/conf"
 	protos "github.com/Pavlico/topcoin/internal/grpc/protos/coins"
+	"github.com/Pavlico/topcoin/internal/utils/prettifier"
 	"google.golang.org/grpc"
 )
 
-func GetCoins() ([]*protos.CoinData, error) {
+func GetCoins() ([]byte, int) {
 	coins, err := doRequest()
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError
 	}
-	return coins.Coins, nil
+	result, err := prettifier.PrettyPrint(coins)
+	if err != nil {
+		return nil, http.StatusInternalServerError
+	}
+	return result, http.StatusOK
 
 }
 

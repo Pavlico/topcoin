@@ -1,16 +1,19 @@
 package main
 
 import (
-	grpcserver "github.com/Pavlico/topcoin/internal/grpc/server"
+	"log"
+
 	httpserver "github.com/Pavlico/topcoin/internal/http/server"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/flags"
 )
 
 func main() {
-	if true {
-		serverManager := httpserver.InitServer()
-		serverManager.Serve()
+	flagData := flags.GetFlagData()
+	if err := flagData.ValidateFlags(); err != nil {
+		log.Println(err)
+		return
 	}
-	if false {
-		grpcserver.Serve()
-	}
+	serverManager := httpserver.InitServer(flagData.CommunicationType)
+	serverManager.Serve()
+
 }

@@ -1,8 +1,6 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220524133112-4d1fdc159e13 h1:eND3cJgFsBpB6KupQLA5MQy4XYgoRYwfEgGbT0sKdn8=
-github.com/Pavlico/topcoin/services/cryptocompare v0.0.0-20220524133112-4d1fdc159e13/go.mod h1:JuLfWHL/S1739zTpXhtSMZDBhRiRrvdPokou76TRIm0=
 github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525104047-83cd35f035ec h1:PQend8hR/Uhq3OyVY9IJHUP6KH+Dpm5WSM/+1CJ9eeY=
 github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220525104047-83cd35f035ec/go.mod h1:zOWwV/e0X8Yu3nZh24ZPvjy775MIjy6G8lOky6b0bV4=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
