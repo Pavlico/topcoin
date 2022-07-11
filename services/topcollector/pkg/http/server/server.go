@@ -56,9 +56,9 @@ func shutdown(ctx context.Context, server *http.Server) {
 
 func (ss *ServerStarterStruct) Serve() {
 	routes := http.NewServeMux()
-	routes.HandleFunc(conf.TopCoinEndpoint, handler.GetMergedData())
+	routes.HandleFunc(conf.ServiceConfig.HttpEndpoint, handler.GetMergedData())
 	s := &http.Server{
-		Addr:    conf.TopCoinPort,
+		Addr:    conf.ServiceConfig.HttpPort,
 		Handler: routes,
 	}
 	go start(s)

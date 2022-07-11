@@ -50,7 +50,7 @@ func Initialize() (DbServiceStruct, error) {
 }
 
 func dsn() string {
-	c := conf.GetDbCredentials()
+	c := conf.ServiceConfig.DbCredentials
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", c.Username, c.Password, c.Hostname, c.DbName)
 }
 

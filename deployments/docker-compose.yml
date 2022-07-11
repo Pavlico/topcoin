@@ -14,7 +14,6 @@ services:
       - db
     links:
       - db
-      - topcollector
   db:
     container_name: mysql
     image: mysql:8.0
@@ -30,45 +29,45 @@ services:
     volumes:
       - db:/var/lib/mysql
       - /home/pwasi/Desktop/golang/topcoin/deployments/db/:/docker-entrypoint-initdb.d
-  topcollector:
-    container_name: topcollector
-    build:
-      context: ./../services/topcollector
-      dockerfile: ./build/dockerfile
-    ports:
-      - 8070:8070
-    volumes:
-      - ./../:/usr/src/app
-    links:
-      - coinmarket
-      - cryptocompare
-      - db
-  cron:
-    container_name: cron
-    build:
-      context: ./../services/cron
-      dockerfile: ./build/dockerfile
-    ports:
-      - 8075:8075
-    volumes:
-      - ./../:/usr/src/app
-  coinmarket:
-    container_name: coinmarket
-    build:
-      context: ./../services/coinmarket
-      dockerfile: ./build/dockerfile
-    ports:
-      - 8060:8060
-    volumes:
-      - ./../:/usr/src/app
-  cryptocompare:
-    container_name: cryptocompare
-    build:
-      context: ./../services/cryptocompare
-      dockerfile: ./build/dockerfile
-    ports:
-      - 8050:8050
-    volumes:
-      - ./../:/usr/src/app
+  # topcollector:
+  #   container_name: topcollector
+  #   build:
+  #     context: ./../services/topcollector
+  #     dockerfile: ./build/dockerfile
+  #   ports:
+  #     - 8070:8070
+  #   volumes:
+  #     - ./../:/usr/src/app
+  #   links:
+  #     - coinmarket
+  #     - cryptocompare
+  #     - db
+  # cron:
+  #   container_name: cron
+  #   build:
+  #     context: ./../services/cron
+  #     dockerfile: ./build/dockerfile
+  #   ports:
+  #     - 8075:8075
+  #   volumes:
+  #     - ./../:/usr/src/app
+  # coinmarket:
+  #   container_name: coinmarket
+  #   build:
+  #     context: ./../services/coinmarket
+  #     dockerfile: ./build/dockerfile
+  #   ports:
+  #     - 8060:8060
+  #   volumes:
+  #     - ./../:/usr/src/app
+  # cryptocompare:
+  #   container_name: cryptocompare
+  #   build:
+  #     context: ./../services/cryptocompare
+  #     dockerfile: ./build/dockerfile
+  #   ports:
+  #     - 8050:8050
+  #   volumes:
+  #     - ./../:/usr/src/app
 volumes:
   db: { }
