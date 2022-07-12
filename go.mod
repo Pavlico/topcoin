@@ -3,13 +3,12 @@ module github.com/Pavlico/topcoin
 go 1.18
 
 require (
-	github.com/Pavlico/topcoin/services/topcollector v0.0.0-20220707100628-8cc22bf8b3eb
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.12.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	google.golang.org/grpc v1.47.0
 	gopkg.in/h2non/gock.v1 v1.1.2
 )
@@ -36,5 +35,5 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

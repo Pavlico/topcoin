@@ -15,7 +15,6 @@ const (
 
 type Config struct {
 	AppConfig
-	HttpRequestConf
 	GRPCServerConfig
 	HttpServerConfig
 	DbCredentials
@@ -27,15 +26,6 @@ type AppConfig struct {
 	CoinmarketScoreEndpoint  string `mapstructure:"COINMARKET_ENDPOINT"`
 	CryptocompareUrl         string `mapstructure:"CRYPTOCOMPARE_URL"`
 	CryptocompareTopEndpoint string `mapstructure:"CRYPTOCOMPARE_ENDPOINT"`
-}
-
-type HttpRequestConf struct {
-	ScoreRequestApiAddress        string `mapstructure:"SCORE_REQUEST_API_ADDRESS"`
-	ScoreRequestEndPoint          string `mapstructure:"SCORE_REQUEST_ENDPOINT"`
-	ScoreRequestCredentials       string `mapstructure:"SCORE_REQUEST_CREDENTIALS"`
-	ScoreRequestCredentialsHeader string `mapstructure:"SCORE_REQUEST_CREDENTIALS_HEADER"`
-	ScoreRequestConvertVal        string `mapstructure:"SCORE_REQUEST_CONVERT_VAL"`
-	ScoreRequestSkipInvalidVal    string `mapstructure:"SCORE_REQUEST_SKIP_INVALID_VAL"`
 }
 
 type DbCredentials struct {
@@ -73,7 +63,6 @@ func LoadConfig(config ...interface{}) error {
 	var grpcServerConfig GRPCServerConfig
 	var appConfig AppConfig
 	var httpServerConfig HttpServerConfig
-	var httpRequestConfig HttpRequestConf
 	var dbCredentials DbCredentials
 	for _, conf := range config {
 		switch conf.(type) {
@@ -95,12 +84,6 @@ func LoadConfig(config ...interface{}) error {
 				err = fmt.Errorf(err.Error(), unmarhsallErr)
 			}
 			ServiceConfig = Config{HttpServerConfig: httpServerConfig}
-		case HttpRequestConf:
-			unmarhsallErr := viper.Unmarshal(&httpRequestConfig)
-			if unmarhsallErr != nil {
-				err = fmt.Errorf(err.Error(), unmarhsallErr)
-			}
-			ServiceConfig = Config{HttpRequestConf: httpRequestConfig}
 		case DbCredentials:
 			unmarhsallErr := viper.Unmarshal(&dbCredentials)
 			if unmarhsallErr != nil {

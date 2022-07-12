@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/conf"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/flags"
-	grpcserver "github.com/Pavlico/topcoin/services/coinmarket/pkg/grpc/server"
-	httpserver "github.com/Pavlico/topcoin/services/coinmarket/pkg/http/server"
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
+	"github.com/Pavlico/topcoin/services/topcollector/pkg/flags"
+	grpcserver "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/server"
+	httpserver "github.com/Pavlico/topcoin/services/topcollector/pkg/http/server"
 )
 
 const (
@@ -20,13 +20,13 @@ func Run() error {
 	}
 
 	if flagData.CommunicationType == defaultType {
-		if err := conf.LoadConfig(conf.AppConfig{}, conf.HttpRequestConf{}, conf.HttpServerConfig{}); err != nil {
+		if err := conf.LoadConfig(conf.AppConfig{}, conf.DbCredentials{}, conf.HttpServerConfig{}); err != nil {
 			return err
 		}
 		httpserver.Serve()
 	}
 	if flagData.CommunicationType == grpcType {
-		if err := conf.LoadConfig(conf.AppConfig{}, conf.HttpRequestConf{}, conf.GRPCServerConfig{}); err != nil {
+		if err := conf.LoadConfig(conf.AppConfig{}, conf.DbCredentials{}, conf.GRPCServerConfig{}); err != nil {
 			return err
 		}
 		grpcserver.Serve()

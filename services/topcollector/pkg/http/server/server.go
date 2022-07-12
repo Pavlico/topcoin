@@ -14,17 +14,6 @@ import (
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/http/handler"
 )
 
-type ServerStarter interface {
-	Serve(server *http.Server)
-}
-
-type ServerStarterStruct struct {
-}
-
-func InitServer() *ServerStarterStruct {
-	return &ServerStarterStruct{}
-}
-
 func createChannel() (chan os.Signal, func()) {
 	stopCh := make(chan os.Signal, 1)
 	signal.Notify(stopCh, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
@@ -43,18 +32,19 @@ func start(server *http.Server) {
 	}
 }
 
-func shutdown(ctx context.Context, server *http.Server) {
+func shutdown(ctx context.Context, server *http.Server) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		panic(err)
+		return err
 	} else {
 		log.Println("service shutdowned")
+		return nil
 	}
 }
 
-func (ss *ServerStarterStruct) Serve() {
+func Serve() error {
 	routes := http.NewServeMux()
 	routes.HandleFunc(conf.ServiceConfig.HttpEndpoint, handler.GetMergedData())
 	s := &http.Server{
@@ -63,10 +53,13 @@ func (ss *ServerStarterStruct) Serve() {
 	}
 	go start(s)
 	stopCh, closeCh := createChannel()
-	defer shutdown(context.Background(), s)
-
-	defer closeCh()
-	log.Println("notified:", <-stopCh)
+	<-stopCh
+	closeCh()
+	err := shutdown(context.Background(), s)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CheckConnections() {
