@@ -32,7 +32,7 @@ func GetMergedData() ([]*protos.TopCoinData, error) {
 }
 
 func getTop() (*protosCryptocompare.TopResponse, error) {
-	conn, err := grpc.Dial(conf.CryptocompareUrl, grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.ServiceConfig.CryptocompareUrl, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func getTop() (*protosCryptocompare.TopResponse, error) {
 }
 
 func getScores(symbols []string) (*protosCoinmarket.ScoreResponse, error) {
-	conn, err := grpc.Dial(conf.CoinmarketUrl, grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.ServiceConfig.CoinmarketUrl, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

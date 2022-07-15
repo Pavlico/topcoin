@@ -10,12 +10,15 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Pavlico/topcoin/internal/conf"
 	"github.com/Pavlico/topcoin/internal/http/handler"
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/flags"
 )
 
 const (
 	grpcType    = "grpc"
-	defaultType = "http"
+	httpType    = "http"
+	defaultType = httpType
 )
 
 type ServerStarter interface {
@@ -50,35 +53,43 @@ func start(server *http.Server) {
 	}
 }
 
-func shutdown(ctx context.Context, server *http.Server) {
+func shutdown(ctx context.Context, server *http.Server) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		panic(err)
+		return err
 	} else {
 		log.Println("service shutdowned")
+		return nil
 	}
 }
 
-func (ss *ServerStarterStruct) Serve() {
-	routes := http.NewServeMux()
-	if ss.communicationType == defaultType {
-		routes.HandleFunc("/top", handler.GetCoinsHttp())
+func Serve() error {
+	flagData := flags.GetFlagData()
+	if err := flagData.ValidateFlags(); err != nil {
+		return err
 	}
-	if ss.communicationType == grpcType {
-		routes.HandleFunc("/top", handler.GetCoinsGrpc())
+	routes := http.NewServeMux()
+	if flagData.CommunicationType == defaultType {
+		routes.HandleFunc(conf.ServiceConfig.HttpEndpoint, handler.GetCoinsHttp())
+	}
+	if flagData.CommunicationType == grpcType {
+		routes.HandleFunc(conf.ServiceConfig.HttpEndpoint, handler.GetCoinsGrpc())
 	}
 	s := &http.Server{
-		Addr:    ":8080",
+		Addr:    conf.ServiceConfig.HttpPort,
 		Handler: routes,
 	}
 	go start(s)
 	stopCh, closeCh := createChannel()
-	defer shutdown(context.Background(), s)
-
-	defer closeCh()
-	log.Println("notified:", <-stopCh)
+	<-stopCh
+	closeCh()
+	err := shutdown(context.Background(), s)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CheckConnections() {

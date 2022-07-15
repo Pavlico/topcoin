@@ -7,25 +7,21 @@ import (
 
 	"github.com/Pavlico/topcoin/internal/conf"
 	protos "github.com/Pavlico/topcoin/internal/grpc/protos/coins"
-	"github.com/Pavlico/topcoin/internal/utils/prettifier"
 	"google.golang.org/grpc"
 )
 
-func GetCoins() ([]byte, int) {
+func GetCoins() (*protos.TopCoinsResponse, int) {
 	coins, err := doRequest()
 	if err != nil {
 		return nil, http.StatusInternalServerError
 	}
-	result, err := prettifier.PrettyPrint(coins)
-	if err != nil {
-		return nil, http.StatusInternalServerError
-	}
-	return result, http.StatusOK
+
+	return coins, http.StatusOK
 
 }
 
 func doRequest() (*protos.TopCoinsResponse, error) {
-	conn, err := grpc.Dial(conf.TopCollectorEndpoint, grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.ServiceConfig.TopCollectorEndpoint, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

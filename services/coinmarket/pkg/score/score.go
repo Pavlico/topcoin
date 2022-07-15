@@ -19,8 +19,7 @@ func GetScoreData(symbols []string) (map[string]dataTypes.ScoreData, error) {
 	client := getClient()
 	sResponse := dataTypes.ScoreResponse{}
 	scoreData := make(map[string]dataTypes.ScoreData)
-	apiConf := conf.ApiConfig[conf.ScoreApi]
-	req, err := CreateRequest(apiConf, symbols)
+	req, err := CreateRequest(conf.ServiceConfig, symbols)
 	if err != nil {
 		return nil, err
 	}
@@ -55,30 +54,29 @@ func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	return responseData, nil
 }
 func ValidateResponse(sResponse dataTypes.ScoreResponse) error {
-	if sResponse.ScoreResponseError.Status.ErrorCode != conf.NoErrorCode {
+	if sResponse.ScoreResponseError.Status.ErrorCode != conf.ServiceConfig.NoErrorCode {
 		return errors.New("Response SCORE not valid")
 	}
 	return nil
 }
 
-func CreateRequest(apiData conf.ApiData, symbols []string) (*http.Request, error) {
+func CreateRequest(appConf conf.Config, symbols []string) (*http.Request, error) {
 	param := url.Values{}
-	for i, val := range apiData.Options {
-		param.Add(i, val)
-	}
-	param.Add(conf.SymbolParam, strings.Join(symbols, ","))
-	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
+	param.Add(appConf.SkipInvalid, appConf.ScoreRequestSkipInvalidVal)
+	param.Add(appConf.Convert, appConf.ScoreRequestConvertVal)
+	param.Add(appConf.SymbolParam, strings.Join(symbols, ","))
+	endpoint := appConf.ScoreRequestApiAddress + appConf.ScoreRequestEndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
+	req.Header.Add(appConf.ScoreRequestCredentialsHeader, appConf.ScoreRequestCredentials)
 	return req, nil
 }
 
 func getClient() http.Client {
 	client := http.Client{
-		Timeout: conf.ApiTimeout * time.Second,
+		Timeout: time.Duration(conf.ServiceConfig.ApiTimeout) * time.Second,
 	}
 	return client
 }

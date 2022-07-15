@@ -17,14 +17,13 @@ func GetTopData() (map[string]dataTypes.TopData, error) {
 	client := getClient()
 	tResponse := dataTypes.TopResponse{}
 	topData := make(map[string]dataTypes.TopData)
-	apiConf := conf.ApiConfig[conf.TopApi]
-	pageNumInt, err := strconv.Atoi(apiConf.PageParam)
+	pageNumInt, err := strconv.Atoi(conf.ServiceConfig.PageParam)
 	if err != nil {
 		return nil, err
 	}
 	for i := 0; i < pageNumInt; i++ {
 		currentPage := strconv.Itoa(i)
-		req, err := CreateRequest(apiConf, currentPage)
+		req, err := CreateRequest(conf.ServiceConfig, currentPage)
 		if err != nil {
 			return nil, err
 		}
@@ -48,7 +47,7 @@ func GetTopData() (map[string]dataTypes.TopData, error) {
 }
 
 func ValidateResponse(tResponse dataTypes.TopResponse) error {
-	if tResponse.TopResponseError.Message != conf.SuccessMessage {
+	if tResponse.TopResponseError.Message != conf.ServiceConfig.SuccessMessage {
 		return errors.New("Response TOP is not valid")
 	}
 	return nil
@@ -68,25 +67,24 @@ func GetResponse(req *http.Request, client http.Client) ([]byte, error) {
 	return responseData, nil
 }
 
-func CreateRequest(apiData conf.ApiData, currentPage string) (*http.Request, error) {
+func CreateRequest(appConfig conf.Config, currentPage string) (*http.Request, error) {
 	param := url.Values{}
-	apiData.Options[conf.PageParam] = currentPage
-	for i, val := range apiData.Options {
-		param.Add(i, val)
-	}
+	param.Add(appConfig.PageParam, currentPage)
+	param.Add(appConfig.TsymParam, appConfig.RankRequestTsymVal)
+	param.Add(appConfig.LimitParam, appConfig.RankRequestLimitVal)
 
-	endpoint := apiData.ApiAddress + apiData.EndPoint + param.Encode()
+	endpoint := appConfig.RankRequestApiAddress + appConfig.RankRequestEndPoint + param.Encode()
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add(apiData.CredentialsHeader, apiData.Credentials)
+	req.Header.Add(appConfig.RankRequestCredentialsHeader, appConfig.RankRequestCredentials)
 	return req, nil
 }
 
 func getClient() http.Client {
 	client := http.Client{
-		Timeout: conf.ApiTimeout * time.Second,
+		Timeout: time.Duration(conf.ServiceConfig.ApiTimeout) * time.Second,
 	}
 	return client
 }

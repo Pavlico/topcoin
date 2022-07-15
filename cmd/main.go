@@ -1,19 +1,9 @@
 package main
 
-import (
-	"log"
-
-	httpserver "github.com/Pavlico/topcoin/internal/http/server"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/flags"
-)
+import "github.com/Pavlico/topcoin/internal/http/server"
 
 func main() {
-	flagData := flags.GetFlagData()
-	if err := flagData.ValidateFlags(); err != nil {
-		log.Println(err)
-		return
+	if err := server.Serve(); err != nil {
+		panic(err)
 	}
-	serverManager := httpserver.InitServer(flagData.CommunicationType)
-	serverManager.Serve()
-
 }

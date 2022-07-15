@@ -2,24 +2,24 @@ package server
 
 import (
 	"net"
-	"os"
 
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/conf"
 	"github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/handler"
 	protos "github.com/Pavlico/topcoin/services/topcollector/pkg/grpc/protos/topcollector"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
-func Serve() {
+func Serve() error {
 	gs := grpc.NewServer()
 	cs := handler.NewCoinList()
 	protos.RegisterTopCollectorServer(gs, cs)
 
-	reflection.Register(gs)
-	l, err := net.Listen("tcp", conf.TopCoinPort)
+	l, err := net.Listen(conf.ServiceConfig.GrpcNetwork, conf.ServiceConfig.GrpcPort)
 	if err != nil {
-		os.Exit(1)
+		return err
 	}
-	gs.Serve(l)
+	if err := gs.Serve(l); err != nil {
+		return err
+	}
+	return nil
 }

@@ -7,20 +7,15 @@ import (
 	"time"
 
 	"github.com/Pavlico/topcoin/internal/dataTypes"
-	"github.com/Pavlico/topcoin/internal/utils/prettifier"
 	errorsPkg "github.com/pkg/errors"
 )
 
-func GetCoins() ([]byte, int) {
+func GetCoins() ([]dataTypes.CoinData, int) {
 	coins, err := doRequest()
 	if err != nil {
 		return nil, http.StatusInternalServerError
 	}
-	result, err := prettifier.PrettyPrint(coins)
-	if err != nil {
-		return nil, http.StatusInternalServerError
-	}
-	return result, http.StatusOK
+	return coins, http.StatusOK
 }
 
 func doRequest() ([]dataTypes.CoinData, error) {

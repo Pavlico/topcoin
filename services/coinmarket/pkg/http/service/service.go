@@ -1,18 +1,15 @@
 package service
 
 import (
+	"github.com/Pavlico/topcoin/services/coinmarket/pkg/dataTypes"
 	"github.com/Pavlico/topcoin/services/coinmarket/pkg/score"
-	"github.com/Pavlico/topcoin/services/coinmarket/pkg/utils/prettifier"
 )
 
-func GetScores(symbols []string) ([]byte, error) {
+func GetScores(symbols []string) (map[string]dataTypes.ScoreData, error) {
 	topData, err := score.GetScoreData(symbols)
 	if err != nil {
 		return nil, err
 	}
-	result, err := prettifier.PrettyPrint(topData)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+
+	return topData, nil
 }

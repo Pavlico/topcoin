@@ -1,76 +1,106 @@
 package conf
 
-import "github.com/spf13/viper"
+import (
+	"errors"
+	"fmt"
 
-const TopApi = "top"
-const PageParam = "page"
-const LimitParam = "limit"
-const TsymParam = "tsym"
-const UsdCurrency = "USD"
-const SuccessMessage = "Success"
-const NoErrorCode = 0
-const Convert = "convert"
-const SymbolParam = "symbol"
-const ApiTimeout = 5
-const CoinmarketUrl = "http://coinmarket:8060"
-const TopCollectorUrl = "http://topcollector:8070"
-const TopCollectorEndpoint = "/topcoins"
-const CoinmarketScoreEndpoint = "/score?"
-const CryptocompareUrl = "http://cryptocompare:8050"
-const CryptocompareTopEndpoint = "/top100"
-const EndPointTop = "/topcoins"
-const TopCoinPort = ":8070"
-const ScorePort = ":8060"
-const AppPort = ":8080"
-const TopPort = ":8050"
+	"github.com/spf13/viper"
+)
 
-var ApiConfig = map[string]ApiData{
-	TopApi: {
-		ApiAddress:        "https://min-api.cryptocompare.com",
-		EndPoint:          "/data/top/totalvolfull?",
-		Credentials:       "93d94cc6b38c0c4ed61c744e74d9ecd14223f427b14aea9e7f68f9ca72a5ab7",
-		CredentialsHeader: "x-api-key",
-		PageParam:         "2",
-		Options: map[string]string{
-			PageParam:  "2",
-			LimitParam: "100",
-			TsymParam:  UsdCurrency,
-		},
-	},
-}
-
-type ApiData struct {
-	ApiAddress        string
-	EndPoint          string
-	Credentials       string
-	CredentialsHeader string
-	PageParam         string
-	Options           map[string]string
-}
+const (
+	currentFolderPath = "."
+	configFileName    = "app"
+	configFileType    = "env"
+)
 
 type Config struct {
-	TopApi         string
-	PageParam      string
-	LimitParam     string
-	TsymParam      string
-	UsdCurrency    string
-	SuccessMessage string
-	NoErrorCode    int
-	Convert        string
-	SymbolParam    string
-	ApiTimeout     int
+	AppConfig
+	HttpRequestConf
+	GRPCServerConfig
+	HttpServerConfig
 }
 
-func LoadConfig() (*viper.Viper, error) {
-	v := viper.New()
-	v.AddConfigPath(".")
-	v.SetConfigName("service")
-	v.SetConfigType("json")
-	// viper.AutomaticEnv()
-	err := v.ReadInConfig()
+type AppConfig struct {
+	PageParam      string `mapstructure:"HTTP_PAGE_PARAM_NAME"`
+	LimitParam     string `mapstructure:"HTTP_LIMIT_PARAM_NAME"`
+	TsymParam      string `mapstructure:"HTTP_TSYM_PARAM_NAME"`
+	SuccessMessage string `mapstructure:"SUCCESS_MESSAGE"`
+	SkipInvalid    string `mapstructure:"HTTP_SKIP_INVALID_PARAM_NAME"`
+	SymbolParam    string `mapstructure:"HTTP_SYMBOL_PARAM_NAME"`
+	ApiTimeout     int    `mapstructure:"API_TIMEOUT"`
+}
+
+type HttpRequestConf struct {
+	RankRequestApiAddress        string `mapstructure:"RANK_REQUEST_API_ADDRESS"`
+	RankRequestEndPoint          string `mapstructure:"RANK_REQUEST_ENDPOINT"`
+	RankRequestCredentials       string `mapstructure:"RANK_REQUEST_CREDENTIALS"`
+	RankRequestCredentialsHeader string `mapstructure:"RANK_REQUEST_CREDENTIALS_HEADER"`
+	RankRequestPageParam         string `mapstructure:"RANK_REQUEST_PAGE_PARAM"`
+	RankRequestTsymVal           string `mapstructure:"RANK_REQUEST_SKIP_TSYM_PARAM"`
+	RankRequestLimitVal          string `mapstructure:"RANK_REQUEST_LIMIT_VAL"`
+}
+
+type GRPCServerConfig struct {
+	GrpcPort    string `mapstructure:"RANK_PORT"`
+	GrpcNetwork string `mapstructure:"GRPC_NETWORK"`
+}
+
+type HttpServerConfig struct {
+	HttpPort     string `mapstructure:"RANK_PORT"`
+	HttpUrl      string `mapstructure:"CRYPTOCOMPARE_URL"`
+	HttpEndpoint string `mapstructure:"CRYPTOCOMPARE_ENDPOINT"`
+}
+
+var ServiceConfig Config
+
+func LoadConfig(config ...interface{}) error {
+	if len(config) == 0 {
+		return errors.New("Config was nas specified")
+	}
+	viper.AddConfigPath(currentFolderPath)
+	viper.SetConfigName(configFileName)
+	viper.SetConfigType(configFileType)
+	viper.AutomaticEnv()
+
+	err := viper.ReadInConfig()
 	if err != nil {
-		return v, err
+		return err
 	}
 
-	return v, nil
+	var grpcServerConfig GRPCServerConfig
+	var appConfig AppConfig
+	var httpServerConfig HttpServerConfig
+	var httpRequestConfig HttpRequestConf
+	for _, conf := range config {
+		switch conf.(type) {
+		case GRPCServerConfig:
+			unmarhsallErr := viper.Unmarshal(&grpcServerConfig)
+			if unmarhsallErr != nil {
+				err = fmt.Errorf(err.Error(), unmarhsallErr)
+			}
+			ServiceConfig = Config{GRPCServerConfig: grpcServerConfig}
+		case AppConfig:
+			unmarhsallErr := viper.Unmarshal(&appConfig)
+			if unmarhsallErr != nil {
+				err = fmt.Errorf(err.Error(), unmarhsallErr)
+			}
+			ServiceConfig = Config{AppConfig: appConfig}
+		case HttpServerConfig:
+			unmarhsallErr := viper.Unmarshal(&httpServerConfig)
+			if unmarhsallErr != nil {
+				err = fmt.Errorf(err.Error(), unmarhsallErr)
+			}
+			ServiceConfig = Config{HttpServerConfig: httpServerConfig}
+		case HttpRequestConf:
+			unmarhsallErr := viper.Unmarshal(&httpRequestConfig)
+			if unmarhsallErr != nil {
+				err = fmt.Errorf(err.Error(), unmarhsallErr)
+			}
+			ServiceConfig = Config{HttpRequestConf: httpRequestConfig}
+		}
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }
